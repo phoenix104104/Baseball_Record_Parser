@@ -4,12 +4,13 @@ import sys, os
 import argparse
 
 class PA:
-    def __init__(self, isPlay, pos=0, result=0, rbi=0, run=0, endInning=0, note=0):
+    def __init__(self, isPlay, pos=0, result=0, rbi=0, run=0, out=0, endInning=0, note=0):
         self.isPlay     = isPlay    # used for no-play batter
         self.pos        = pos       # hit-ball direction
         self.result     = result    # result
         self.rbi        = rbi       # RBI
         self.run        = run       # RUN
+        self.out        = out       # out
         self.endInning  = endInning # should be 0, '#' or '!'
         self.note       = note      # 0 or *'
         self.inning     = -1
@@ -41,9 +42,9 @@ class Batter:
         self.PAs.append(pa)
         if( pa.isPlay ):
             self.PA += 1
-            if( pa.result != "BB" ):
+            if( pa.result == "BB" ):
                 self.BB += 1
-            elif( pa.result != "SF"):
+            elif( pa.result == "SF"):
                 self.SF += 1
             else:
                 self.AB += 1
@@ -84,10 +85,22 @@ class Pitcher:
         self.GO  = 0
         self.FO  = 0
 
+    def getERA(self):
+        if( self.ER == 0 ):
+            self.ERA = 0
+        else:
+            if( self.IP == 0 ):
+                self.ERA = float("inf")
+            else:
+                self.ERA = self.ER * 21.0 / self.IP
+        
+        return self.ERA
+
 def ParseEndstring(end_str):
     n = len(end_str)
     rbi     = 0
     run     = 0
+    out     = 0
     isEnd   = 0
     note    = 0
     for s in end_str:
@@ -95,15 +108,17 @@ def ParseEndstring(end_str):
             run += 1
         elif( s.isdigit() ):
             rbi += int(s)
+        elif( s == 'X' ):
+            out += 1
         elif( (s == '#') | (s == '!') ):
             isEnd = s
-        elif( (s == '*') | (s == 'x') ):
+        elif( s == '*' ):
             note = s
         else:
             print "Parse Error! Unknown end notation %s (%s)" %(s, end_str)
             sys.exit(0)
 
-    return (rbi, run, isEnd, note)
+    return (rbi, run, out, isEnd, note)
 
 
 def ParsePAstring(PA_str):
@@ -113,21 +128,21 @@ def ParsePAstring(PA_str):
     else:
         s = PA_str.split('-')
         if( len(s) == 1 ):      # res
-            pa = PA(True, 0, s[0], 0, 0, 0, 0)
+            pa = PA(True, 0, s[0], 0, 0, 0, 0, 0)
         elif( len(s) == 2 ):
             if( s[0].isdigit() | (s[0] == 'L') | (s[0] == 'R') | (s[0] == 'C') ):   # pos-res
                 pos = s[0]
                 res = s[1]
-                pa = PA(True, pos, res, 0, 0, 0, 0)
+                pa = PA(True, pos, res, 0, 0, 0, 0, 0)
             else:               # res-end
                 res = s[0]
-                (rbi, run, isEnd, note) = ParseEndstring(s[1])
-                pa = PA(True, 0, res, rbi, run, isEnd, note)
+                (rbi, run, out, isEnd, note) = ParseEndstring(s[1])
+                pa = PA(True, 0, res, rbi, run, out, isEnd, note)
         elif( len(s) == 3 ):    # pos-res-end
             pos = s[0]
             res = s[1]
-            (rbi, run, isEnd, note) = ParseEndstring(s[2])
-            pa = PA(True, pos, res, rbi, run, isEnd, note)
+            (rbi, run, out, isEnd, note) = ParseEndstring(s[2])
+            pa = PA(True, pos, res, rbi, run, out, isEnd, note)
         else:
             print "Parse Error! Unknown notation " + PA_str
 
@@ -145,29 +160,37 @@ def AddPitcherInfo(pitcher, pa, isER=True):
             pitcher.BB += 1
         elif( pa.result == "K" ):
             pitcher.K += 1
-            pitcher.IP += 1
             supposedOut = 1
         elif( pa.result == "G" ):
             pitcher.GO += 1
-            pitcher.IP += 1
             supposedOut = 1
         elif( pa.result == "F" ):
             pitcher.FO += 1
-            pitcher.IP += 1  
+            supposedOut = 1
+        elif( pa.result == "SF" ):
+            pitcher.FO += 1
             supposedOut = 1
         elif( pa.result == "DP" ): # TODO: need to seperate G-DP or F-DP ?
-            pitcher.GO += 1
-            pitcher.IP += 2
+            pitcher.GO += 2
             supposedOut = 2
-        elif( (pa.result == "FC") & (pa.note == 'x') ):
-            pitcher.IP += 1
-            supposedOut = 1
         elif( pa.result == "E" ):
             supposedOut = 1
+        elif( (pa.result == "FC") & (pa.out > 0) ):
+            pitcher.GO += 1
+            supposedOut = 1
+        elif( pa.result == "CB" ):  # combacker 投手強襲球
+            supposedOut = 1
+        elif( pa.result == "IB" ):  # Illegal batted 違規擊球
+            supposedOut = 1
+        elif( pa.result == "IF" ):  # Infield Fly 內野高飛必死球
+            pitcher.FO += 1
+            supposedOut = 1
 
+
+        pitcher.IP += pa.out
         pitcher.RUN += pa.run
         if (isER):
-            pitcher.ER += pa.run
+            pitcher.ER += pa.rbi
 
     return supposedOut
 
@@ -177,13 +200,11 @@ def ParseGameData(record):
     pitcher = Pitcher()
 
     for i in range(nPlayer):
-        player.append( Batter(record[i][0], record[i][1]) )
+        player.append( Batter(record[i][0].upper(), record[i][1].upper()) )
         n = len(record[i])
         for j in range(2, n):
             pa = ParsePAstring(record[i][j].upper())
             player[i].AddPA(pa)
-
-    print "nPlayer = %d" %nPlayer
 
     # parse inning information
     inning = 1
@@ -207,11 +228,11 @@ def ParseGameData(record):
             break
 
         pa_count += 1
-        if( pa_count % nPlayer == 0 ):
+        if( (pa_count % nPlayer == 0) & (pa.endInning != '#') ):
             column2inning.append(inning)
             column += 1
 
-        if( pa.endInning == '#' ): # end of inning
+        if( pa.endInning == '#' ): # end of inning\
             pa_count = 0
             out = 0
             isER = True
@@ -227,47 +248,59 @@ def ParseGameData(record):
     return player, pitcher, column2inning
 
 
-def digit2Character(n):
+def digit2FullWidth(n):
     if( n == 1 ):
-        return "一"
+        return "１"
     elif( n == 2 ):
-        return "二"
+        return "２"
     elif( n == 3 ):
-        return "三"
+        return "３"
     elif( n == 4 ):
-        return "四"
+        return "４"
     elif( n == 5 ):
-        return "五"
+        return "５"
     elif( n == 6 ):
-        return "六"
+        return "６"
     elif( n == 7 ):
-        return "七"
+        return "７"
     elif( n == 8 ):
-        return "八"
+        return "８"
     elif( n == 9 ):
-        return "九"
+        return "９"
     else:
         print "Error! Unsupported digit %d!" %n
         sys.exit(0)
 
-def pos2word(pos):
+def pos2word(pos, res):
     if( pos == "1" ):
-        word = "投"
+        if( res == "1B" ):
+            word = "內"
+        else:
+            word = "投"
     elif( pos == "2" ):
         word = "捕"
     elif( pos == "3" ):
-        word = "一"
+        if( res == "1B" ):
+            word = "右"
+        else:
+            word = "一"
     elif( pos == "4" ):
-        word = "二"
+        if( res == "1B" ):
+            word = "右"
+        else:
+            word = "二"
     elif( pos == "5" ):
-        word = "三"
+        if( res == "1B" ):
+            word = "左"
+        else:
+            word = "三"
     elif( pos == "6" ):
         word = "游"
-    elif( (pos == "7") | (pos == "L") | (pos == "l") ):
+    elif( (pos == "7") | (pos == "L") ):
         word = "左"
-    elif( (pos == "8") | (pos == "R") | (pos == "r") ):
+    elif( (pos == "8") | (pos == "C") ):
         word = "中"
-    elif( (pos == "9") | (pos == "C") | (pos == "c") ):
+    elif( (pos == "9") | (pos == "R") ):
         word = "右"
     elif( pos == "10" ):
         word = "自"
@@ -292,6 +325,10 @@ def res2word(res, wordLen):
             word = "選"
         elif( res == "SF" ):
             word = "犧"
+        elif( res == "E" ):
+            word = "失"
+        elif( res == "DP" ):
+            word = "雙"
         else:
             print "Error! Unknown res notation %s" %res
             sys.exit(0)  
@@ -318,8 +355,14 @@ def res2word(res, wordLen):
             word = "犧牲"
         elif( res == "FC" ):
             word = "野選"
-        elif( res == "V" ):
-            word += "違擊"
+        elif( res == "IB" ):
+            word = "違擊"
+        elif( res == "E" ):
+            word = "失誤"
+        elif( res == "CB" ):
+            word = "強襲"
+        elif( res == "IF" ):
+            word = "內飛"
         else:
             print "Error! Unknown res notation %s" %res
             sys.exit(0)  
@@ -334,7 +377,7 @@ def end2word(pa):
         word += "r"
     if( pa.endInning != 0 ):
         word += "#"
-    if( pa.note != 0 ):
+    if( (pa.note != 0) & (pa.note != 'X') ):
         word += pa.note
 
     return word
@@ -346,7 +389,7 @@ def PA2Character(pa):
         if( pa.pos == 0 ):
             word = res2word(pa.result, 2)
         else:
-            word = pos2word(pa.pos)
+            word = pos2word(pa.pos, pa.result)
             word += res2word(pa.result, 1)
 
         word += end2word(pa)
@@ -356,19 +399,30 @@ def PA2Character(pa):
 def DumpRecord2PTTformat(player, column2inning, outFile):
     nPlayer = len(player)
     line = " "*10
-    line += (digit2Character(1) + "局    ")
+    line += (digit2FullWidth(1) + "局    ")
         
     for n in range(1, len(column2inning)):
         if( column2inning[n] == column2inning[n-1] ):
             line += (" "*8)
         else:
-            line += (digit2Character(column2inning[n]) + "局    ")
+            line += (digit2FullWidth(column2inning[n]) + "局    ")
 
     line += '\n'
     outFile.write(line)
     
     for n in range(nPlayer):
-        line = "%2s. %-4s  " %(player[n].order, player[n].number)
+        if( player[n].order == 'R' ):
+            order = "代"
+        else:
+            order = player[n].order
+
+        line = "%2s. " %order
+
+        if( player[n].number == 'N' ):
+            line += "%-8s" %"新生"
+        else:
+            line += "%-6s" %player[n].number
+
         column = -1
         for i in range(len(player[n].PAs) ):
 
@@ -384,7 +438,6 @@ def DumpRecord2PTTformat(player, column2inning, outFile):
 
 def DumpPlayerStatistic(player, pitcher, outFile):
     # opponent pitcher result
-    print "IP = %d" %pitcher.IP
     IP = round(pitcher.IP / 3)
     if( pitcher.IP % 3 == 1 ):
         IP += 0.1
@@ -393,10 +446,10 @@ def DumpPlayerStatistic(player, pitcher, outFile):
     
     outFile.write("  投    投局 面打  被   被   四  三  失  自  滾  飛   Ｅ\n")
     outFile.write("  手    球數 對席 安打 全壘  壞  振  分  責  地  球   RA\n")
-    line = "  %s     %.1f   %2d   %2d   %2d   %2d  %2d  %2d  %2d  %2d  %2d\n" %(pitcher.number, IP, pitcher.TBF, pitcher.H, pitcher.HR, pitcher.BB, pitcher.K, pitcher.RUN, pitcher.ER, pitcher.GO, pitcher.FO)
+    line = "  %2s     %.1f  %2d   %2d   %2d   %2d  %2d  %2d  %2d  %2d  %2d  %.2f\n" %(pitcher.number, IP, pitcher.TBF, pitcher.H, pitcher.HR, pitcher.BB, pitcher.K, pitcher.RUN, pitcher.ER, pitcher.GO, pitcher.FO, pitcher.getERA())
     outFile.write(line)
 
-    outFile.write('\n\n')
+    outFile.write('\n')
 
     # Batting Statistic
     outFile.write("        PA  AB  1B  2B  3B  HR  DP RBI RUN  BB   K  SF\n")
@@ -408,23 +461,23 @@ def DumpPlayerStatistic(player, pitcher, outFile):
 
 def PrintPlayer(player, n=-1):
     if n == -1:
-        print "Order No."
         for p in player:
-            print " %s   %s." %(p.order, p.number)
+            print "Ord No. Inn Col Pos Res RBI Run out end note"
+            print "%3s %2s." %(p.order, p.number)
             for pa in p.PAs:
                 if not pa.isPlay:
-                    print '-'
+                    print '\t-'
                 else:
-                    print "\t(%d, %d, %s, %s, %d, %d, %s, %s)" %(pa.inning, pa.column, pa.pos, pa.result, pa.rbi, pa.run, pa.endInning, pa.note)
+                    print "\t( %d,  %d,  %s,  %2s,  %d,  %d,  %d,  %s,  %s)" %(pa.inning, pa.column, pa.pos, pa.result, pa.rbi, pa.run, pa.out, pa.endInning, pa.note)
     else:
         p = player[n]
-        print "Order No."
+        print "Order No. Inn Col Pos Res RBI Run out end note"
         print " %s   %s." %(p.order, p.number)
         for pa in p.PAs:
             if not pa.isPlay:
                 print "\t-"
             else:
-                print "\t(%d, %d, %s, %s, %d, %d, %s, %s)" %(pa.inning, pa.column, pa.pos, pa.result, pa.rbi, pa.run, pa.endInning, pa.note)
+                print "\t(%d, %d, %s, %s, %d, %d, %d, %s, %s)" %(pa.inning, pa.column, pa.pos, pa.result, pa.rbi, pa.run, pa.out, pa.endInning, pa.note)
 
 def main():
 
@@ -440,6 +493,7 @@ def main():
     #PrintPlayer(player)
     outFile = open(outputFileName, 'w')
     DumpRecord2PTTformat(player, column2inning, outFile)
+    outFile.write('\n')
     DumpPlayerStatistic(player, pitcher, outFile)
     outFile.close()
     print "Save " + outputFileName
