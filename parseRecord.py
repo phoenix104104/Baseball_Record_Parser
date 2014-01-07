@@ -380,11 +380,12 @@ def end2word(pa):
     if( (pa.note != 0) & (pa.note != 'X') ):
         word += pa.note
 
-    return word
+    return word, len(word)
 
 def PA2Character(pa):
     if( not pa.isPlay ):
         word = ("　　") # Full-Width white
+        word_len = 4
     else:
         if( pa.pos == 0 ):
             word = res2word(pa.result, 2)
@@ -392,8 +393,26 @@ def PA2Character(pa):
             word = pos2word(pa.pos, pa.result)
             word += res2word(pa.result, 1)
 
-        word += end2word(pa)
+        word_len = 4
+        word = AddColor(pa.result, word)
+        pa_word, n = end2word(pa)
+        word += pa_word
+        word_len += n
 
+    return word, word_len
+
+def AddColor(pa_result, word):
+    if( (pa_result == "1B") | (pa_result == "2B") | (pa_result == "3B") ):
+        word = "\x1b[1;31m%s\x1b[m" %word
+    elif( pa_result == "HR" ):
+        word = "\x1b[1;5;1;31m%s\x1b[m" %word
+    elif( pa_result == "SF" ):
+        word = "\x1b[1;35m%s\x1b[m" %word
+    elif( pa_result == "BB" ):
+        word = "\x1b[1;32m%s\x1b[m" %word
+    elif( pa_result == "K" ):
+        word = "\x1b[1;33m%s\x1b[m" %word
+    
     return word
 
 def DumpRecord2PTTformat(player, column2inning, outFile):
@@ -419,9 +438,11 @@ def DumpRecord2PTTformat(player, column2inning, outFile):
         line = "%2s. " %order
 
         if( player[n].number == 'N' ):
-            line += "%-8s" %"新生"
+            num = "新生"
         else:
-            line += "%-6s" %player[n].number
+            num = player[n].number
+        space = " " * (6 - len(num.decode('utf8').encode('big5') ) ) 
+        line += "%s%s" %(num, space)
 
         column = -1
         for i in range(len(player[n].PAs) ):
@@ -429,9 +450,10 @@ def DumpRecord2PTTformat(player, column2inning, outFile):
             k = player[n].PAs[i].column - column
             line += ( " "*8*(k-1) )
             column = player[n].PAs[i].column
-            word = PA2Character(player[n].PAs[i])
+            word, word_len = PA2Character(player[n].PAs[i])
 
-            line += "%-10s" %word
+            space = " " * (8 - word_len)
+            line += "%s%s" %(word, space)
 
         line += '\n'
         outFile.write(line)
