@@ -6,14 +6,19 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    return render_template("form.html")
+    return render_template("index.html")
 
-@app.route('/test.json', methods=["POST"])
+@app.route('/record.json', methods=["POST"])
 def pass_content():
     print "get content from html:"
-    txt = request.form["text"]
-    print txt
-    return jsonify({'result': txt})
+    data = request.form
+    print data
+    for key in data.keys():
+        print key
+    
+    #arr = data.getlist("data[0][PA][]")
+    #print arr
+    return jsonify({'result': "got data!"})
 
 if __name__ == "__main__":
     app.debug = True
