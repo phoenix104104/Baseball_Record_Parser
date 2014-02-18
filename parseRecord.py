@@ -3,7 +3,7 @@
 import sys, os
 import argparse
 from player import Game, Team, Batter, Pitcher, PA
-from dump_record import make_PTT_format
+from dump_record import make_PTT_format, make_database_format
 
 def ParseBase(pa, str):
 
@@ -248,14 +248,17 @@ def main():
     game = ParseGameData(raw_data)
 
     
-    post = make_PTT_format(game, isColor)
+    post_ptt = make_PTT_format(game, isColor)
+    post_db  = make_database_format(game)
     if( outputFileName == None ):
-        print post
+        print post_ptt
+        print post_db
     else:
         with open(outputFileName, 'w') as f:
             print "Dump %s" %outputFileName
-            f.write(post)
-
+            f.write(post_ptt)
+            f.write(post_db)
+    
 
 if __name__ == "__main__":
     main()

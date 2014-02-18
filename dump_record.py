@@ -18,6 +18,13 @@ def make_PTT_format(game, isAddColor=True):
     return posts
 
 
+def make_database_format(game):
+    posts = ""
+    posts += dump_player_statistic(game.team1)
+    posts += "\n"
+    posts += dump_player_statistic(game.team2)
+    return posts
+
 def make_score_board(game): ## TODO
     
     posts  = "      ｜１｜２｜３｜４｜５｜６｜７｜　｜Ｒ｜Ｈ｜Ｅ\n"
@@ -269,17 +276,24 @@ def AddColor(pa_result, word):
 
 
 
-def DumpPlayerStatistic(player, pitcher, outFile):
+def dump_player_statistic(team):
     
-
-    outFile.write('\n')
-
-    # Batting Statistic
-    outFile.write("        PA  AB  1B  2B  3B  HR  DP RBI RUN  BB   K  SF\n")
-    for p in player:
+    # Batter Statistic
+    posts = "Team: %s\n" %team.name
+    posts += "Batting:\n"
+    posts += "        PA  AB  1B  2B  3B  HR  DP RBI RUN  BB   K  SF\n"
+    for p in team.batters:
         line = "%2s. %-4s" %(p.order, p.number)
         line += "%2d  %2d  %2d  %2d  %2d  %2d  %2d %3d %3d  %2d   %d  %2d\n" %(p.PA, p.AB, p.B1, p.B2, p.B3, p.HR, p.DP, p.RBI, p.RUN, p.BB, p.K, p.SF)
-        outFile.write(line)
+        posts += line
+
+    posts += '\nPitching:\n'
+    posts += " No.  IP  PA   H  HR  BB   K  Run  ER  GO  FO\n" 
+    # Pitcher Statistic
+    for p in team.pitchers:
+        posts += " %-4s%3s  %2d  %2d  %2d  %2d  %2d  %3d  %2d  %2d  %2d\n" %(p.number, p.IP(), p.TBF, p.H, p.HR, p.BB, p.K, p.RUN, p.ER, p.GO, p.FO)
+
+    return posts
 
 
 def PrintPlayer(player, n=-1):
