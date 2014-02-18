@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="author" content="phoenix04104">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <!--<link href="css/bootstrap.min.css" rel="stylesheet">-->
+    <link href="/static/css/record.css" rel="stylesheet">
+	<title>Baseball Record</title>
+
+</head>
+<!-- commemt -->
+<body>
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="/static/js/record.js"></script>
+
+    <div>
+        <input type='button' id="send"       value="send">
+        <input type='button' id="add_player" value="Add Player">
+        <input type='button' id="add_PA"     value="Add PA">
+		<input type="reset" value="Reset">
+    </div>
+
+    <table rules="groups" id="record_table">
+        <thead>
+        <tr>
+            <th>Order</th>
+            <th>No.</th>
+            <th>PA1</th>
+            <th>PA2</th>
+            <th>PA3</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th>1.</th>
+            <th><input type="text" size="5" id="B1-no"> </th>
+            <th><input type="text" id="B1-PA1"></th>
+            <th><input type="text" id="B1-PA2"></th>
+            <th><input type="text" id="B1-PA3"></th>
+        </tr>
+        <tr>
+            <th>2.</th>
+            <th><input type="text" size="5" id="B2-no"> </th>
+            <th><input type="text" id="B2-PA1"></th>
+            <th><input type="text" id="B2-PA2"></th>
+            <th><input type="text" id="B2-PA3"></th>
+        </tr>
+        </tbody>
+    </table>
+
+    <div>
+        <textarea id="output"></textarea>
+    </div>
+</body>
+</html>
