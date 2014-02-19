@@ -109,7 +109,7 @@ class Pitcher:
         self.HR  = 0
         self.BB  = 0
         self.K   = 0
-        self.RUN = 0
+        self.Run = 0
         self.ER  = 0
         self.GO  = 0
         self.FO  = 0
@@ -157,7 +157,7 @@ class Pitcher:
                 self.FO += 1
     
             self.Out += pa.out
-            self.RUN += pa.run
+            self.Run += pa.run
             if (isER):
                 self.ER += pa.rbi
     

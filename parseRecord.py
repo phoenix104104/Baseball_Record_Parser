@@ -5,7 +5,7 @@ import argparse
 from player import Game, Team, Batter, Pitcher, PA
 from dump_record import make_PTT_format, make_database_format
 
-def ParseBase(pa, str):
+def parse_base(pa, str):
 
     n = len(str)
     rbi   = 0
@@ -36,7 +36,7 @@ def ParseBase(pa, str):
     return pa
 
 
-def ParsePA(team, order_table, order, turn, inning, curr_order):
+def parse_PA(team, order_table, order, turn, inning, curr_order):
     
     pa_str = order_table[order][turn].upper()
     s = pa_str.split('-')
@@ -66,12 +66,12 @@ def ParsePA(team, order_table, order, turn, inning, curr_order):
 
         else:               # res-end
             pa.result = s[0]
-            pa = ParseBase(pa, s[1])
+            pa = parse_base(pa, s[1])
 
     elif( len(s) == 3 ):    # pos-res-end
         pa.pos    = s[0]
         pa.result = s[1]
-        pa = ParseBase(pa, s[2])
+        pa = parse_base(pa, s[2])
 
     else:
        print "Parse Error! Unknown notation " + PA_str
@@ -81,7 +81,7 @@ def ParsePA(team, order_table, order, turn, inning, curr_order):
     return pa
 
 
-def ParseTeams(game_data):
+def parse_teams(game_data):
 
     team1 = Team()
     team2 = Team()
@@ -177,7 +177,7 @@ def print_batter(batters):
         sys.stdout.write('\n')
 
 
-def ParseTeamOrder(team):
+def parse_order_table(team):
         
     # parse inning information
     inning   = 1
@@ -191,7 +191,7 @@ def ParseTeamOrder(team):
         curr_order.append(batter)
 
     while(True):
-        pa = ParsePA(team, team.order_table, order, turn, inning, curr_order)
+        pa = parse_PA(team, team.order_table, order, turn, inning, curr_order)
         score += pa.run
 
         if( pa.endInning in ('#', '!') ):  # change inning
@@ -219,13 +219,13 @@ def load_raw_record_data(fileName):
                 
     return raw_data
 
-def ParseGameData(game_data):
+def parse_game_data(game_data):
 
     game = Game()
-    team1, team2 = ParseTeams(game_data)
+    team1, team2 = parse_teams(game_data)
 
-    game.team1 = ParseTeamOrder(team1)
-    game.team2 = ParseTeamOrder(team2)
+    game.team1 = parse_order_table(team1)
+    game.team2 = parse_order_table(team2)
     
     parse_pitcher_info(game.team1, game.team2.pitchers[0])  
     parse_pitcher_info(game.team2, game.team1.pitchers[0])  
@@ -245,14 +245,14 @@ def main():
     isColor = not opt.no_color
 
     raw_data = load_raw_record_data(recordFileName)
-    game = ParseGameData(raw_data)
+    game = parse_game_data(raw_data)
 
     
     post_ptt = make_PTT_format(game, isColor)
     post_db  = make_database_format(game)
     if( outputFileName == None ):
         print post_ptt
-        print post_db
+   #     print post_db
     else:
         with open(outputFileName, 'w') as f:
             print "Dump %s" %outputFileName

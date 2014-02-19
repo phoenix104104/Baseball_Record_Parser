@@ -16,6 +16,8 @@ def make_PTT_format(game, isAddColor=True):
     posts += make_pitcher_table(game.team2.pitchers[0])
     posts += '\n'
 
+    posts += make_score_board(game)
+    posts += "\n"
     return posts
 
 
@@ -28,11 +30,14 @@ def make_database_format(game):
 
 def make_score_board(game): ## TODO
     
-    posts  = "      ｜１｜２｜３｜４｜５｜６｜７｜　｜Ｒ｜Ｈ｜Ｅ\n"
-    posts += "－－－＋－＋－＋－＋－＋－＋－＋－＋－＋－＋－＋－\n"
-    posts += " %s ｜　｜　｜　｜　｜　｜　｜　｜　｜　｜　｜　\n" %game.team1.name
-    posts += "－－－＋－＋－＋－＋－＋－＋－＋－＋－＋－＋－＋－\n"
-    posts += " %s ｜　｜　｜　｜　｜　｜　｜　｜　｜　｜　｜　\n" %game.team2.name
+    hh = "─"
+    vv = "│"
+    vh = "┼"
+    posts  = "      %s１%s２%s３%s４%s５%s６%s７%s　%sＲ%sＨ%sＥ\n" %(vv, vv, vv, vv, vv, vv, vv, vv, vv, vv, vv)
+    posts += "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n" %(hh, hh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh)
+    posts += " %s %s　%s　%s　%s　%s　%s　%s　%s　%s　%s　%s　\n" %(game.team1.name, vv, vv, vv, vv, vv, vv, vv, vv, vv, vv, vv)
+    posts += "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n" %(hh, hh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh)
+    posts += " %s %s　%s　%s　%s　%s　%s　%s　%s　%s　%s　%s　\n" %(game.team2.name, vv, vv, vv, vv, vv, vv, vv, vv, vv, vv, vv)
 
     return posts
 
@@ -94,7 +99,7 @@ def make_pitcher_table(pitcher):
     posts = ""
     posts += "  投    投局 面打  被   被   四  三  失  自  滾  飛   Ｅ\n"
     posts += "  手    球數 對席 安打 全壘  壞  振  分  責  地  球   RA\n"
-    posts += "  %2s     %3s  %2d   %2d   %2d   %2d  %2d  %2d  %2d  %2d  %2d  %.2f\n" %(pitcher.number, pitcher.IP(), pitcher.TBF, pitcher.H, pitcher.HR, pitcher.BB, pitcher.K, pitcher.RUN, pitcher.ER, pitcher.GO, pitcher.FO, pitcher.getERA())
+    posts += "  %2s     %3s  %2d   %2d   %2d   %2d  %2d  %2d  %2d  %2d  %2d  %.2f\n" %(pitcher.number, pitcher.IP(), pitcher.TBF, pitcher.H, pitcher.HR, pitcher.BB, pitcher.K, pitcher.Run, pitcher.ER, pitcher.GO, pitcher.FO, pitcher.getERA())
     
     return posts
 
@@ -292,7 +297,7 @@ def dump_player_statistic(team):
     posts += " No.  IP  PA   H  HR  BB   K  Run  ER  GO  FO\n" 
     # Pitcher Statistic
     for p in team.pitchers:
-        posts += " %-4s%3s  %2d  %2d  %2d  %2d  %2d  %3d  %2d  %2d  %2d\n" %(p.number, p.IP(), p.TBF, p.H, p.HR, p.BB, p.K, p.RUN, p.ER, p.GO, p.FO)
+        posts += " %-4s%3s  %2d  %2d  %2d  %2d  %2d  %3d  %2d  %2d  %2d\n" %(p.number, p.IP(), p.TBF, p.H, p.HR, p.BB, p.K, p.Run, p.ER, p.GO, p.FO)
 
     return posts
 
