@@ -14,6 +14,7 @@ def make_PTT_format(game, isAddColor=True):
     posts += make_team_table(game.team2, isAddColor)
     posts += "\n\n"
     posts += make_pitcher_table(game.team2.pitchers[0])
+    posts += '\n'
 
     return posts
 
