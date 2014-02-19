@@ -177,7 +177,7 @@ def print_batter(batters):
         sys.stdout.write('\n')
 
 
-def parse_order_table(team):
+def parse_order_table(team, team_opp):
         
     # parse inning information
     inning   = 1
@@ -189,10 +189,18 @@ def parse_order_table(team):
     curr_order = []
     for batter in team.batters:
         curr_order.append(batter)
-
+    
+    team_H = 0
+    team_E = 0
     while(True):
         pa = parse_PA(team, team.order_table, order, turn, inning, curr_order)
         score += pa.run
+        
+        if( pa.result in ("1B", "2B", "3B", "HR") ):
+            team_H += 1
+
+        if( pa.result == "E" ):
+            team_E += 1
 
         if( pa.endInning in ('#', '!') ):  # change inning
             team.scores.append(score)
@@ -205,6 +213,15 @@ def parse_order_table(team):
         if( order == nOrder ):
             order = 0
             turn += 1
+    
+    team.H      = team_H
+    team_opp.E  = team_E
+
+    # append 0 to team score board until 7th inning
+    score_inn = len(team.scores)
+    for i in range(7-score_inn):
+        team.scores.append(0)
+    
     return team
 
 def load_raw_record_data(fileName):
@@ -224,8 +241,8 @@ def parse_game_data(game_data):
     game = Game()
     team1, team2 = parse_teams(game_data)
 
-    game.team1 = parse_order_table(team1)
-    game.team2 = parse_order_table(team2)
+    game.team1 = parse_order_table(team1, team2)
+    game.team2 = parse_order_table(team2, team1)
     
     parse_pitcher_info(game.team1, game.team2.pitchers[0])  
     parse_pitcher_info(game.team2, game.team1.pitchers[0])  

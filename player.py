@@ -17,12 +17,17 @@ class Team:
         self.order_table    = []
         self.scores         = []
         self.col2inn        = None
+        self.H              = 0
+        self.E              = 0
 
     def order(self):
         return len(self.order_table)
 
     def nBatter(self):
         return len(self.batters)
+
+    def Runs(self):
+        return sum(self.scores) 
 
 class PA:
     def __init__(self):

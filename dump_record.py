@@ -5,6 +5,8 @@ import sys, os
 def make_PTT_format(game, isAddColor=True):
     
     posts = ""
+    posts += make_score_board(game)
+    posts += "\n"
     posts += game.team1.name + "\n"
     posts += make_team_table(game.team1, isAddColor)
     posts += "\n\n"
@@ -16,8 +18,6 @@ def make_PTT_format(game, isAddColor=True):
     posts += make_pitcher_table(game.team2.pitchers[0])
     posts += '\n'
 
-    posts += make_score_board(game)
-    posts += "\n"
     return posts
 
 
@@ -35,9 +35,9 @@ def make_score_board(game): ## TODO
     vh = "┼"
     posts  = "      %s１%s２%s３%s４%s５%s６%s７%s　%sＲ%sＨ%sＥ\n" %(vv, vv, vv, vv, vv, vv, vv, vv, vv, vv, vv)
     posts += "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n" %(hh, hh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh)
-    posts += " %s %s　%s　%s　%s　%s　%s　%s　%s　%s　%s　%s　\n" %(game.team1.name, vv, vv, vv, vv, vv, vv, vv, vv, vv, vv, vv)
+    posts += " %s %s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s　%s%2d%s%2d%s%2d\n" %(game.team1.name, vv, game.team1.scores[0], vv, game.team1.scores[1], vv, game.team1.scores[2], vv, game.team1.scores[3], vv, game.team1.scores[4], vv, game.team1.scores[5], vv, game.team1.scores[6], vv, vv, game.team1.Runs(), vv, game.team1.H, vv, game.team1.E)
     posts += "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n" %(hh, hh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh)
-    posts += " %s %s　%s　%s　%s　%s　%s　%s　%s　%s　%s　%s　\n" %(game.team2.name, vv, vv, vv, vv, vv, vv, vv, vv, vv, vv, vv)
+    posts += " %s %s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s　%s%2d%s%2d%s%2d\n" %(game.team2.name, vv, game.team2.scores[0], vv, game.team2.scores[1], vv, game.team2.scores[2], vv, game.team2.scores[3], vv, game.team2.scores[4], vv, game.team2.scores[5], vv, game.team2.scores[6], vv, vv, game.team2.Runs(), vv, game.team2.H, vv, game.team2.E)
 
     return posts
 
