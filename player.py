@@ -167,6 +167,6 @@ class Pitcher:
     
             self.Out += pa.out
             self.Run += pa.run
-            if (isER):
-                self.ER += pa.rbi
+            if (isER and pa.result != "E"):
+                self.ER += pa.run
     
