@@ -10,12 +10,12 @@ def make_PTT_format(game, isAddColor=True):
     posts += game.team1.name + "\n"
     posts += make_team_table(game.team1, isAddColor)
     posts += "\n\n"
-    posts += make_pitcher_table(game.team1.pitchers[0])
+    posts += make_pitcher_table(game.team1.pitchers)
     posts += "--------------------------------------------------------------------------------\n\n"
     posts += game.team2.name + "\n"
     posts += make_team_table(game.team2, isAddColor)
     posts += "\n\n"
-    posts += make_pitcher_table(game.team2.pitchers[0])
+    posts += make_pitcher_table(game.team2.pitchers)
     posts += '\n'
 
     return posts
@@ -94,12 +94,13 @@ def make_team_table(team, isAddColor=True):
 
     return posts
 
-def make_pitcher_table(pitcher):
+def make_pitcher_table(pitchers):
 
     posts = ""
     posts += "  投    投局 面打  被   被   四  三  失  自  滾  飛   Ｅ\n"
     posts += "  手    球數 對席 安打 全壘  壞  振  分  責  地  球   RA\n"
-    posts += "  %2s     %3s  %2d   %2d   %2d   %2d  %2d  %2d  %2d  %2d  %2d  %.2f\n" %(pitcher.number, pitcher.IP(), pitcher.TBF, pitcher.H, pitcher.HR, pitcher.BB, pitcher.K, pitcher.Run, pitcher.ER, pitcher.GO, pitcher.FO, pitcher.getERA())
+    for pitcher in pitchers:
+        posts += "  %2s     %3s  %2d   %2d   %2d   %2d  %2d  %2d  %2d  %2d  %2d  %.2f\n" %(pitcher.number, pitcher.IP(), pitcher.TBF, pitcher.H, pitcher.HR, pitcher.BB, pitcher.K, pitcher.Run, pitcher.ER, pitcher.GO, pitcher.FO, pitcher.getERA())
     
     return posts
 

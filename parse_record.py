@@ -26,8 +26,8 @@ def parse_base(pa, str):
         elif( s == '*' ):
             note = s
         else:
-            print "Parse Error! Unknown end notation %s (%s)" %(s, str)
-            sys.exit(0)
+            sys.exit("Parse Error! Unknown base notation %s (%s)" %(s, str) )
+            
     
     pa.rbi = rbi
     pa.run = run
@@ -81,7 +81,7 @@ def parse_PA(team, order_table, order, turn, inning, curr_order):
         pa = parse_base(pa, s[2])
 
     else:
-       print "Parse Error! Unknown notation " + PA_str
+       sys.exit("Parse Error! Wrong PA input %s\n" %pa.raw_str)
 
     batter.AddPA(pa)
     order_table[order][turn] = [batter, pa]
@@ -289,11 +289,12 @@ def main():
     else:
         with open(outputFileName, 'w') as f:
             print "Dump %s" %outputFileName
-            
             # replace ESC to ^U
             post_ptt = post_ptt.replace('\x1b', '\025')
-            
             f.write(post_ptt)
+
+        with open(outputFileName + '.db', 'w') as f:
+            print "Dump %s" %(outputFileName + '.db')
             f.write(post_db)
     
 

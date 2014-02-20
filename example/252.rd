@@ -13,13 +13,13 @@ P   66
 
 T2  電機
 P   80
-1   91  9-1B    4-G-x#  10-FC-x#    3-F-x
-2   73  8-F-x   6-E-r   8-F-x       6-FC-xr
-3   49  6-1B    BB-r    7-1B        7-HR-2r
-4   42  1-FC-x  BB-r    8-F-x       1-1B
-5   40  1-G-x#  BB-1r   6-FC-x#     7-1B
-6   68  BB-r    5-1B-1r 7-F-x       K-x!
-7   23  BB      5-1B-1r 8-3B-r  
-8   45  1-G-x   1-G-x1  4-G-x1
-9   OB  3-F-x   5-1B-2  1-G-x#
-10  80  1-FC-1  1-FC-x  10-1B
+1   91  9-1B    4-G-x#      10-FC-x#    3-F-x
+2   73  8-F-x   6-E-r       8-F-x       6-FC-xr
+3   49  6-1B    BB-r        7-1B        7-HR-2r
+4   42  1-FC-x  BB-r        8-F-x       1-1B
+5   40  1-G-x#  BB-1r       6-FC-x#     7-1B
+6   68  BB-r    p32-5-1B-1r 7-F-x       K-x!
+7   23  BB      5-1B-1r     8-3B-r  
+8   45  1-G-x   1-G-x1      4-G-x1
+9   OB  3-F-x   5-1B-2      1-G-x#
+10  80  1-FC-1  1-FC-x      10-1B

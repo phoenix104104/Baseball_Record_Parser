@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
+import sys
 
 class Game:
     def __init__(self):
@@ -66,6 +67,9 @@ class Batter:
         self.IF  = 0    # infield fly 內野高飛必死球
 
     def AddPA(self, pa):
+        if (pa.result not in ['1B', '2B', '3B', 'HR', 'SF', 'BB', 'K', 'G', 'F', 'DP', 'FC', 'E', 'IB', 'CB', 'IF']):
+            sys.exit('Error! Not support PA notation %s in %s' %(pa.result, pa.raw_str))
+
         self.PAs.append(pa)
         if( pa.isPlay ):
             self.PA += 1
