@@ -19,6 +19,7 @@ Format of input file:
 
 * PA: (換投-代打-)方位-記錄-註解
   
+```
     代打: 
         r + 背號
     方位: 
@@ -46,7 +47,7 @@ Format of input file:
         #   換局
         !   比賽結束
         *   補充說明
-        
+```        
         
 * PA 的寫法可以為 
         "記錄"
@@ -90,3 +91,16 @@ Input Example
 
 Output Example
 -------------
+* PTT format:
+
+![ScreenShot](https://raw.github.com/phoenix104104/Baseball_Record_Parser/ver2.0/image/ptt_example.jpg)
+
+* statistics:
+
+![ScreenShot](https://raw.github.com/phoenix104104/Baseball_Record_Parser/ver2.0/image/statistics_output.jpg)
+
+
+TODO
+----------
+換投後若壘上有人，ERA 的計算是錯的
+
