@@ -47,6 +47,12 @@ def parse_PA(team, order_table, order, turn, inning, curr_order):
     pa.isPlay = True
     pa.raw_str = pa_str
     
+    # change pitcher
+    if( s[0][0] == 'P' ):
+        no = s[0][1:].upper()
+        pa.change_pitcher = no
+        s = s[1:]
+
     batter = curr_order[order] # pointer to current batter
     if( s[0][0] == 'R' and len(s[0])!= 1  ):  # change batter
         no = s[0][1:]
@@ -111,7 +117,7 @@ def parse_teams(game_data):
 
 
 
-def parse_pitcher_info(team, pitcher):
+def parse_pitcher_info(team, pitchers):
 
     # parse inning information
     inning   = 1
@@ -125,8 +131,17 @@ def parse_pitcher_info(team, pitcher):
     supp_out = 0    # supposed out
     col2inn  = []
 
+    pitcher = pitchers[0]
+
     while(True):
-        pa = team.order_table[order][turn][1]    
+        pa = team.order_table[order][turn][1]
+        
+        # change pitcher
+        if( pa.change_pitcher != None ):
+            no = pa.change_pitcher
+            pitcher = Pitcher(no)
+            pitchers.append( pitcher )
+
         pitcher.AddPa(pa, isER)
         pa.column = column
 
@@ -245,8 +260,8 @@ def parse_game_data(game_data):
     game.team1 = parse_order_table(team1, team2)
     game.team2 = parse_order_table(team2, team1)
     
-    parse_pitcher_info(game.team1, game.team2.pitchers[0])  
-    parse_pitcher_info(game.team2, game.team1.pitchers[0])  
+    parse_pitcher_info(game.team1, game.team2.pitchers)  
+    parse_pitcher_info(game.team2, game.team1.pitchers)  
     
     return game
 
@@ -270,10 +285,14 @@ def main():
     post_db  = make_database_format(game)
     if( outputFileName == None ):
         print post_ptt
-   #     print post_db
+        print post_db
     else:
         with open(outputFileName, 'w') as f:
             print "Dump %s" %outputFileName
+            
+            # replace ESC to ^U
+            post_ptt = post_ptt.replace('\x1b', '\025')
+            
             f.write(post_ptt)
             f.write(post_db)
     

@@ -42,7 +42,7 @@ class PA:
         self.inning     = -1        # inning
         self.column     = 0         # column in printed table
         self.raw_str    = ""        # pa code string
-
+        self.change_pitcher = None
 
 class Batter:
     def __init__(self, order, number):
