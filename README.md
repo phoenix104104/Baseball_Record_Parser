@@ -1,12 +1,18 @@
-Baseball_Record_Parser
+#Baseball_Record_Parser
 ======================
-Usage: ./parse_record.py [-h] -i INPUT_FILE_NAME [-o OUTPUT_FILE_NAME] [-nc]
+Usage: 
+----------
+    ./parse_record.py [-h] -i INPUT_FILE_NAME [-o OUTPUT_FILE_NAME] [-nc]
 
-optional arguments:
-  -h, --help           show this help message and exit
-  -i INPUT_FILE_NAME   Specify input file name
-  -o OUTPUT_FILE_NAME  Specify output file name [default: print to screen]
-  -nc                  Close color mode [default: on]
+* optional arguments:
+
+.. code-block::
+
+    -h, --help           show this help message and exit
+    -i INPUT_FILE_NAME   Specify input file name
+    -o OUTPUT_FILE_NAME  Specify output file name [default: print to screen]
+    -nc                  Close color mode [default: on]
+
 
 
 Format of input file: (以下所有代號皆不分大小寫)
