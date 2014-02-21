@@ -56,9 +56,13 @@ def parse_PA(team, order_table, order, turn, inning, curr_order):
     batter = curr_order[order] # pointer to current batter
     if( s[0][0] == 'R' and len(s[0])!= 1  ):  # change batter
         no = s[0][1:]
-        idx = team.batters.index(batter)
-        batter = Batter('R', no)
-        team.batters.insert(idx+1, batter)
+        idx = team.batters.index(batter) # current batter index
+
+        batter = team.find_batter(no)
+        if( batter == None ):
+            batter = Batter('R', no)
+            team.batters.insert(idx+1, batter)
+
         curr_order[order] = batter
         s = s[1:]
 
@@ -139,8 +143,18 @@ def parse_pitcher_info(team, pitchers):
         # change pitcher
         if( pa.change_pitcher != None ):
             no = pa.change_pitcher
-            pitcher = Pitcher(no)
-            pitchers.append( pitcher )
+
+            # find whether pitcher had been on field before
+            is_new_pitcher = True
+            for p in pitchers:
+                if p.number == no:
+                    pitcher = p
+                    is_new_pitcher = False
+                    break
+                    
+            if( is_new_pitcher ):
+                pitcher = Pitcher(no)
+                pitchers.append( pitcher )
 
         pitcher.AddPa(pa, isER)
         pa.column = column

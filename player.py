@@ -30,6 +30,13 @@ class Team:
     def Runs(self):
         return sum(self.scores) 
 
+    def find_batter(self, number):
+        for batter in self.batters:
+            if batter.number == number:
+                return batter
+        # not found
+        return None
+
 class PA:
     def __init__(self):
         self.isPlay     = False     # used for no-play batter
@@ -47,8 +54,8 @@ class PA:
 
 class Batter:
     def __init__(self, order, number):
-        self.order      = order
-        self.number     = number
+        self.order  = order
+        self.number = number
         self.PAs = []
         self.PA  = 0
         self.AB  = 0
