@@ -136,7 +136,10 @@ def pos2word(pos, res):
         else:
             word = "投"
     elif( pos == "2" ):
-        word = "捕"
+        if( res == "1B" ):
+            word = "內"
+        else:
+            word = "補"
     elif( pos == "3" ):
         if( res == "1B" ):
             word = "右"
