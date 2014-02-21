@@ -5,7 +5,7 @@ import sys, os
 def make_PTT_format(game, isAddColor=True):
     
     posts = ""
-    posts += make_score_board(game)
+    posts += make_PTT_score_board(game)
     posts += "\n"
     posts += game.team1.name + "\n"
     posts += make_team_table(game.team1, isAddColor)
@@ -22,13 +22,28 @@ def make_PTT_format(game, isAddColor=True):
 
 
 def make_database_format(game):
-    posts = ""
+
+    posts = make_score_board(game)
+    posts += "\n"
     posts += dump_player_statistic(game.team1)
     posts += "\n"
     posts += dump_player_statistic(game.team2)
     return posts
 
-def make_score_board(game): ## TODO
+def make_score_board(game):
+
+    posts = ""
+    posts += "%s\t" %(game.team1.name)
+    for s in game.team1.scores:
+        posts += "%4d" %s
+    posts += "\n"
+    posts += "%s\t" %(game.team2.name)
+    for s in game.team2.scores:
+        posts += "%4d" %s
+    posts += "\n"
+    return posts
+
+def make_PTT_score_board(game): 
     
     hh = "─"
     vv = "│"
