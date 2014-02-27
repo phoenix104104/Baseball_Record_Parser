@@ -26,8 +26,8 @@ def parse_base(pa, str):
         elif( s == '*' ):
             note = s
         else:
-            print "Parse Error! Unknown end notation %s (%s)" %(s, str)
-            sys.exit(0)
+            sys.exit("Parse Error! Unknown base notation %s (%s)" %(s, str) )
+            
     
     pa.rbi = rbi
     pa.run = run
@@ -56,9 +56,13 @@ def parse_PA(team, order_table, order, turn, inning, curr_order):
     batter = curr_order[order] # pointer to current batter
     if( s[0][0] == 'R' and len(s[0])!= 1  ):  # change batter
         no = s[0][1:]
-        idx = team.batters.index(batter)
-        batter = Batter('R', no)
-        team.batters.insert(idx+1, batter)
+        idx = team.batters.index(batter) # current batter index
+
+        batter = team.find_batter(no)
+        if( batter == None ):
+            batter = Batter('R', no)
+            team.batters.insert(idx+1, batter)
+
         curr_order[order] = batter
         s = s[1:]
 
@@ -81,7 +85,7 @@ def parse_PA(team, order_table, order, turn, inning, curr_order):
         pa = parse_base(pa, s[2])
 
     else:
-       print "Parse Error! Unknown notation " + PA_str
+       sys.exit("Parse Error! Wrong PA input %s\n" %pa.raw_str)
 
     batter.AddPA(pa)
     order_table[order][turn] = [batter, pa]
@@ -139,8 +143,18 @@ def parse_pitcher_info(team, pitchers):
         # change pitcher
         if( pa.change_pitcher != None ):
             no = pa.change_pitcher
-            pitcher = Pitcher(no)
-            pitchers.append( pitcher )
+
+            # find whether pitcher had been on field before
+            is_new_pitcher = True
+            for p in pitchers:
+                if p.number == no:
+                    pitcher = p
+                    is_new_pitcher = False
+                    break
+                    
+            if( is_new_pitcher ):
+                pitcher = Pitcher(no)
+                pitchers.append( pitcher )
 
         pitcher.AddPa(pa, isER)
         pa.column = column
@@ -289,11 +303,12 @@ def main():
     else:
         with open(outputFileName, 'w') as f:
             print "Dump %s" %outputFileName
-            
             # replace ESC to ^U
             post_ptt = post_ptt.replace('\x1b', '\025')
-            
             f.write(post_ptt)
+
+        with open(outputFileName + '.db', 'w') as f:
+            print "Dump %s" %(outputFileName + '.db')
             f.write(post_db)
     
 

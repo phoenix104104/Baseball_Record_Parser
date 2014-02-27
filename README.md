@@ -1,23 +1,33 @@
-Baseball_Record_Parser
+#Baseball_Record_Parser
 ======================
-Usage: ./parse_record.py [-h] -i INPUT_FILE_NAME [-o OUTPUT_FILE_NAME] [-nc]
+Usage: 
+----------
+    ./parse_record.py [-h] -i INPUT_FILE_NAME [-o OUTPUT_FILE_NAME] [-nc]
+    
+optional:
 
-optional arguments:
-  -h, --help           show this help message and exit
-  -i INPUT_FILE_NAME   Specify input file name
-  -o OUTPUT_FILE_NAME  Specify output file name [default: print to screen]
-  -nc                  Close color mode [default: on]
+    -h, --help           show this help message and exit
+    -i INPUT_FILE_NAME   Specify input file name
+    -o OUTPUT_FILE_NAME  Specify output file name [default: print to screen]
+    -nc                  Close color mode [default: on]
 
 
+
+Format of input file: 
+-----------
 (以下所有代號皆不分大小寫)
 
-PA: 代打-方位-記錄-註解
+* PA: (換投-代打-)方位-記錄-註解
   
-  代打: r + 背號
-  
-  方位: 可以是守備代號(1~10)或L、R、C
-  
-  記錄: 1B  一壘安打
+```
+    換投:
+        p + 背號
+    代打: 
+        r + 背號
+    方位: 
+        可以是守備代號(1~10)或L、R、C
+    記錄: 
+        1B  一壘安打
         2B  二壘安打
         3B  三壘安打
         HR  全壘打
@@ -32,50 +42,63 @@ PA: 代打-方位-記錄-註解
         IB  違規擊球(Illegal Batted)
         CB  投手強襲球(combacker)
         IF  內野高飛必死球(Infield Fly)
-        
-  註解: 1~4 打點
+    註解: 
+        1~4 打點
         r   得分
         x   出局數(目前這個打席造成的出局數，而非球員出局。例如雙殺打DP要寫兩個x)
         #   換局
         !   比賽結束
         *   補充說明
+```        
         
-PA 的寫法可以為 "記錄"
-                "方位-記錄"
-                "記錄-註解"
-                "方位-記錄-註解"
-                "代打-記錄"
-                "代打-方位-記錄"
-                "代打-記錄-註解"
-                "代打-方位-記錄-註解"
-                
-範例: input file:
+* PA 的寫法可以為 
+        "記錄"
+        "方位-記錄"
+        "記錄-註解"
+        "方位-記錄-註解"
 
-T1  資工
+* 若同一打席同時有換投和換代打，記錄請寫"換投-代打-PA"
+
+
+Input Example
+----------
+```
+T1  化研
+p   6
+1   n   R-1B-r   8-2B-r   8-F-x       8-2B-r  8-2B-2r
+2   7   8-1B-r   9-3B-2r  6-1B-1      5-E-r   BB-r
+3   23  L-1B-1r  7-2B-1r  8-1B-1x*#   7-2B-2r HR-4r
+4   6   7-2B-2   7-HR-2r  6-G-x       7-2B-2  7-2B-r
+5   26  6-F-xx*  7-2B-r   r31-6-1B    K-x     rOB-8-1b-1r
+6   24  5-E-r    6-1B-r   7-2B        6-G-x#  8-E-r
+7   17  7-1B-1   8-HR-3r  K-x         8-1B-r  6-1B
+8   21  7-2B-x#* 7-1B-r   6-F-x#      6-1B-r  1-1B-1
+9   25  8-1B     6-E-r    8-1B-r      5-F-x   6-DP-xx!
+10  3   5-FC-xr  6-1B     rob-k-x     1-1b-r
+
+T2  資工
 p   24
-1   74  7-2B-r      8-2B-2r     5-F-x       6-E-r
-2   36  3-F-x       10-1B       8-1B-r      1-G-x
-3   7   5-G-x       9-2B-1      HR-3r       8-2B-2
-4   20  BB          6-1B        2-F-x#      6-G-x!
-5   35  9-1B-1      K-x#        K-x
-6   24  6-E         6-F-x       7-1B
-7   29  10-F-x#     BB          8-1B
-8   21  5-1B        K-x         K-x
-9   77  BB-r        1-G-x#      K-x#
-10  n   K-x         K-x         BB
-11  ob  6-1B-xr*    BB-r        8-1B-rx*
+1   74  BB      6-F-x   7-F-x
+2   36  DP-xx   8-F-x   BB-r
+3   7   1-F-x#  9-3B    8-2B-r
+4   71  6-E-r   1-G-x#  8-2B-2
+5   20  6-E     p99-8-F-x   6-G-x!
+6   24  K-x     6-G-x
+7   35  BB      BB
+8   29  K-x     1-1B
+9   21  1-E     6-FC-x#
+10  77  K-x#    1-G-x
+```
 
-T2 OP牙
-P   33
-1   20  BB-r    K-x     5-G-x
-2   25  7-2B-1r 7-2B    10-1B
-3   33  K-x     3-F-x   4-F-x#
-4   81  6-1B-1  4-F-x#  9-2B-r
-5   43  9-1B    9-1B-r  4-F-x
-6   40  K-x     7-2B-1r 7-1B
-7   47  6-F-x#  10-1B-1 3-E-x*
-8   55  5-F-x   7-F-x   1-1B
-9   1   1-G-x   K-x     K-x!
-10  88  10-F-x# K-x#    
-11  66  4-1B    4-F-x
+Output Example
+-------------
+* PTT format:
+
+![ScreenShot](https://raw.github.com/phoenix104104/Baseball_Record_Parser/ver2.0/image/ptt_example.jpg)
+
+* statistics:
+
+![ScreenShot](https://raw.github.com/phoenix104104/Baseball_Record_Parser/ver2.0/image/statistics_output.jpg)
+
+
 
