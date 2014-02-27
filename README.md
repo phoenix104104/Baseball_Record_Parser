@@ -20,6 +20,8 @@ Format of input file:
 * PA: (換投-代打-)方位-記錄-註解
   
 ```
+    換投:
+        p + 背號
     代打: 
         r + 背號
     方位: 
@@ -99,7 +101,4 @@ Output Example
 ![ScreenShot](https://raw.github.com/phoenix104104/Baseball_Record_Parser/ver2.0/image/statistics_output.jpg)
 
 
-TODO
-----------
-換投後若壘上有人，ERA 的計算是錯的
 
