@@ -36,6 +36,18 @@ def parse_base(pa, str):
     pa.note = note
     return pa
 
+def change_pitcher(pa_strs):
+    if( pa_strs[0][0] == 'P' ):
+        return True
+    else:
+        return False
+
+def change_batter(pa_strs):
+    if( pa_strs[0][0] == 'R' and len(pa_strs[0]) != 1 ): # s[0] = 'R + no', not only 'R'(Right)
+        return True
+    else:
+        return False
+        
 
 def parse_PA(team, order_table, order, turn, inning, curr_order):
     
@@ -47,24 +59,27 @@ def parse_PA(team, order_table, order, turn, inning, curr_order):
     pa.isPlay = True
     pa.raw_str = pa_str
     
-    # change pitcher
-    if( s[0][0] == 'P' ):
-        no = s[0][1:].upper()
-        pa.change_pitcher = no
-        s = s[1:]
 
     batter = curr_order[order] # pointer to current batter
-    if( s[0][0] == 'R' and len(s[0])!= 1  ):  # change batter
-        no = s[0][1:].upper()
-        idx = team.batters.index(batter) # current batter index
+    
+    while( change_pitcher(s) or change_batter(s) ):
 
-        batter = team.find_batter(no)
-        if( batter == None or no == "OB"):
-            batter = Batter('R', no)
-            team.batters.insert(idx+1, batter)
+        if( change_pitcher(s) ):
+            no = s[0][1:].upper()
+            pa.change_pitcher = no
+            s = s[1:]
 
-        curr_order[order] = batter
-        s = s[1:]
+        if( change_batter(s)  ):  # change batter
+            no = s[0][1:].upper()
+            idx = team.batters.index(batter) # current batter index
+
+            batter = team.find_batter(no)
+            if( batter == None or no == "OB" ): # may exist multiple OB
+                batter = Batter('R', no)
+                team.batters.insert(idx+1, batter)
+
+            curr_order[order] = batter
+            s = s[1:]
 
     if( len(s) == 1 ):      # result
         pa.result = s[0]
