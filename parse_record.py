@@ -55,11 +55,11 @@ def parse_PA(team, order_table, order, turn, inning, curr_order):
 
     batter = curr_order[order] # pointer to current batter
     if( s[0][0] == 'R' and len(s[0])!= 1  ):  # change batter
-        no = s[0][1:]
+        no = s[0][1:].upper()
         idx = team.batters.index(batter) # current batter index
 
         batter = team.find_batter(no)
-        if( batter == None ):
+        if( batter == None or no == "OB"):
             batter = Batter('R', no)
             team.batters.insert(idx+1, batter)
 
