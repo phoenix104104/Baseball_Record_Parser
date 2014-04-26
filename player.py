@@ -171,7 +171,8 @@ class Pitcher:
                 self.GO += 1
             elif( pa.result == "IF" ):  # Infield Fly 內野高飛必死球
                 self.FO += 1
-    
+            
+            #print "pitcher add PA(%s), out = %d" %(pa.raw_str, pa.out)
             self.Out += pa.out
             self.Run += pa.run
             if (isER and pa.result != "E"):

@@ -6,6 +6,16 @@ import argparse
 from player import Game, Team, Batter, Pitcher, PA
 from dump_record import make_PTT_format, make_database_format
 
+def check_least_out(pa):
+    out = 0
+    one_out = ["G", "F", "K", "SF", "IF", "CB", "IB"]
+    if( pa.result in one_out ):
+        out = 1
+    elif( pa.result == "DP" ):
+        out = 2
+
+    return out
+
 def parse_base(pa, str):
 
     n = len(str)
@@ -26,9 +36,9 @@ def parse_base(pa, str):
         elif( s == '*' ):
             note = s
         else:
-            sys.exit("Parse Error! Unknown base notation %s (%s)" %(s, str) )
-            
-    
+            sys.exit("Parse Error! Unknown base notation %s (%s)" %(s, pa.raw_str) )
+
+
     pa.rbi = rbi
     pa.run = run
     pa.out = out
@@ -101,6 +111,11 @@ def parse_PA(team, order_table, order, turn, inning, curr_order):
 
     else:
        sys.exit("Parse Error! Wrong PA input %s\n" %pa.raw_str)
+
+
+    least_out = check_least_out(pa)
+    if( pa.out < least_out ):
+        pa.out = least_out
 
     batter.AddPA(pa)
     order_table[order][turn] = [batter, pa]
