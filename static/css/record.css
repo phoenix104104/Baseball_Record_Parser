@@ -1,14 +1,42 @@
-.pos {
-    width: 20px;
-    text-align: center;
+body {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background: #A9CFFF;
 }
 
-.rec {
-    width: 30px;
-    text-align: center;
+.navbar-brand {
+    color: #333333 !important;
+    font-size: 25px;
+    line-height: 25px;
 }
 
-.res {
-    width: 20px;
-    text-align: center;
+.jumbotron {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-top: 20px !important;
+    padding-bottom: 30px !important;
 }
+
+.row {
+    margin: 10px;
+    padding: 0px;
+    height: 320px;
+}
+
+h3 {
+    margin-top: 10px;
+}
+
+.box-title {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.text-area {
+    display: inline-block;
+    width: 45%;
+    float: left;
+}
+
+
+

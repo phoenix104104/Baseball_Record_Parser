@@ -33,7 +33,7 @@ def parse_base(pa, str):
             out += 1
         elif( (s == '#') | (s == '!') ):
             isEnd = s
-        elif( s == '*' ):
+        elif( (s == '*') | (s == '?') ):
             note = s
         else:
             sys.exit("Parse Error! Unknown base notation %s (%s)" %(s, pa.raw_str) )
