@@ -22,24 +22,51 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li>author</li>
+                    <li><a href="http://google.com">author</a></li>
                 </ul>
             </div>
         </div>
         <div class="jumbotron">
             <div class="row">
+                <div class="column"> 
+                    <div class="text-area">
+                        <h3 class="box-title">Team1</h3>
+                        <textarea class="form-control" id="input" rows="12"></textarea>
+                    </div>
+                    <div class="text-area">
+                        <h3 class="box-title">Team2</h3>
+                        <textarea class="form-control" id="input" rows="12"></textarea>
+                    </div>
+                </div>
+                <div class="controller"> 
+                    <div class="controller-buttons">
+                        <input type="button" class="btn btn-info" id="parse" value="=>">
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="text-area">
+                        <h3 class="box-title">Output</h3>
+                        <textarea class="form-control" id="output" rows="27"></textarea>
+                    </div>
+                </div>
+            </div>
+            <!--
+            <div class="row">
                 <div class="text-area">
                     <h3 class="box-title">Input</h3>
-                    <input type="button" value="test">
                     <textarea class="form-control" id="input" rows="12"></textarea>
                 </div>
-                
+                <div class="controller"> 
+                    <div class="controller-buttons">
+                        <input type="button" class="btn btn-info" id="parse" value="=>">
+                    </div>
+                </div>
                 <div class="text-area">
                     <h3 class="box-title">Output</h3>
                     <textarea class="form-control" id="output" rows="12"></textarea>
                 </div>
             </div>
-            <input type="button" id="enter" value="輸入">
+            -->
         </div>
     </div>
 
