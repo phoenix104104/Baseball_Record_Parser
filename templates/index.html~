@@ -31,11 +31,11 @@
                 <div class="column"> 
                     <div class="text-area">
                         <h3 class="box-title">Team1</h3>
-                        <textarea class="form-control" id="input" rows="12"></textarea>
+                        <textarea class="form-control" id="team1" rows="12"></textarea>
                     </div>
                     <div class="text-area">
                         <h3 class="box-title">Team2</h3>
-                        <textarea class="form-control" id="input" rows="12"></textarea>
+                        <textarea class="form-control" id="team2" rows="12"></textarea>
                     </div>
                 </div>
                 <div class="controller"> 

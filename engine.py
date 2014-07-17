@@ -8,16 +8,14 @@ app = Flask(__name__)
 def hello():
     return render_template("index.html")
 
-@app.route('/record.json', methods=["POST"])
-def pass_content():
+@app.route('/convert.json', methods=["POST"])
+def convert():
     print "get content from html:"
-    data = request.form
-    print data
-    for key in data.keys():
-        print key
+    data1 = request.form["text1"]
+    data2 = request.form["text2"]
+    print data1
+    print data2
     
-    #arr = data.getlist("data[0][PA][]")
-    #print arr
     return jsonify({'result': "got data!"})
 
 if __name__ == "__main__":
