@@ -20,7 +20,12 @@ body {
 .row {
     margin: 10px;
     padding: 0px;
-    height: 320px;
+    height: 660px;
+}
+
+.column {
+    float: left;
+    width: 45%;
 }
 
 h3 {
@@ -34,9 +39,24 @@ h3 {
 
 .text-area {
     display: inline-block;
-    width: 45%;
+    width: 100%;
     float: left;
 }
 
+.controller {
+    display: inline-block;
+    width: 10%;
+    height: 100%;
+    float: left;
+    position: relative;
+}
 
+.controller-buttons {
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -20px;
+    margin-top: -25px;
+}
 

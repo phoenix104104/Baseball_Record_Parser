@@ -128,6 +128,7 @@ def parse_teams(game_data):
     team2 = Team()
     
     for data in game_data:
+        print data
         if data[0] == 'T1':
             team = team1
             team.name = data[1]
@@ -284,7 +285,7 @@ def parse_order_table(team, team_opp):
     
     return team
 
-def load_raw_record_data(fileName):
+def load_data_from_file(fileName):
 
     raw_data = []
     with open(fileName) as f:
@@ -294,6 +295,18 @@ def load_raw_record_data(fileName):
             if len(data) != 0:
                 raw_data.append(data)
                 
+    return raw_data
+
+def load_data_from_string(string_data):
+    
+    raw_data = []
+    lines = string_data.split('\n')
+    for line in lines:
+        data = line.split()
+        data = filter(None, data)
+        if len(data) != 0:
+            raw_data.append(data)
+    
     return raw_data
 
 def parse_game_data(game_data):
@@ -321,7 +334,7 @@ def main():
     outputFileName = opt.output_file_name
     isColor = not opt.no_color
 
-    raw_data = load_raw_record_data(recordFileName)
+    raw_data = load_data_from_file(recordFileName)
     game = parse_game_data(raw_data)
 
     
