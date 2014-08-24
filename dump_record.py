@@ -2,32 +2,38 @@
 # -*- coding: utf8 -*-
 import sys, os
 
-def make_PTT_format(game, isAddColor=True):
+def make_PTT_format(game, isOneTeam=False, isAddColor=True):
     
     posts = ""
-    posts += make_PTT_score_board(game)
-    posts += "\n"
-    posts += game.team1.name + "\n"
-    posts += make_team_table(game.team1, isAddColor)
-    posts += "\n\n"
-    posts += make_pitcher_table(game.team1.pitchers)
-    posts += "--------------------------------------------------------------------------------\n\n"
-    posts += game.team2.name + "\n"
-    posts += make_team_table(game.team2, isAddColor)
-    posts += "\n\n"
-    posts += make_pitcher_table(game.team2.pitchers)
-    posts += '\n'
+    if( isOneTeam ):
+        posts += make_team_table(game.team1, isAddColor)
+    else:
+        posts += make_PTT_score_board(game)
+        posts += "\n"
+        posts += game.team1.name + "\n"
+        posts += make_team_table(game.team1, isAddColor)
+        posts += "\n\n"
+        posts += make_pitcher_table(game.team1.pitchers)
+        posts += "--------------------------------------------------------------------------------\n\n"
+        posts += game.team2.name + "\n"
+        posts += make_team_table(game.team2, isAddColor)
+        posts += "\n\n"
+        posts += make_pitcher_table(game.team2.pitchers)
+        posts += '\n'
 
     return posts
 
 
-def make_database_format(game):
+def make_database_format(game, isOneTeam=False):
 
-    posts = make_score_board(game)
-    posts += "\n"
-    posts += dump_player_statistic(game.team1)
-    posts += "\n"
-    posts += dump_player_statistic(game.team2)
+    if( isOneTeam ):
+        posts = dump_player_statistic(game.team1)
+    else:
+        posts = make_score_board(game)
+        posts += "\n"
+        posts += dump_player_statistic(game.team1)
+        posts += "\n"
+        posts += dump_player_statistic(game.team2)
     return posts
 
 def make_score_board(game):
@@ -56,6 +62,9 @@ def make_PTT_score_board(game):
 
     return posts
 
+def big5len(string):
+    return len(string.decode('utf8').encode('big5') )
+
 
 def make_team_table(team, isAddColor=True):
 
@@ -63,12 +72,12 @@ def make_team_table(team, isAddColor=True):
     nPlayer = team.nBatter()
     player  = team.batters
 
-    posts = " "*10
+    posts = " "*15
     posts += (digit2FullWidth(1) + "局    ")
         
     for n in range(1, len(col2inn)):
         if( col2inn[n] == col2inn[n-1] ):
-            posts += (" "*8)
+            posts += (" "*10)
         else:
             posts += (digit2FullWidth(col2inn[n]) + "局    ")
 
@@ -87,8 +96,8 @@ def make_team_table(team, isAddColor=True):
         else:
             num = player[n].number
 
-        space = " " * (6 - len(num.decode('utf8').encode('big5') ) ) 
-        posts += "%s%s" %(num, space)
+        space = " " * (6 - big5len(num) ) 
+        posts += "%s%s%3s  " %(num, space, player[n].pos)
 
         column = 0
         for i in range(len(player[n].PAs) ):
@@ -104,6 +113,7 @@ def make_team_table(team, isAddColor=True):
 
             space = " " * (8 - word_len)
             posts += "%s%s" %(word, space)
+
 
         posts += '\n'
 
@@ -122,23 +132,25 @@ def make_pitcher_table(pitchers):
 
 def digit2FullWidth(n):
     if( n == 1 ):
-        return "１"
+        return "一"
     elif( n == 2 ):
-        return "２"
+        return "二"
     elif( n == 3 ):
-        return "３"
+        return "三"
     elif( n == 4 ):
-        return "４"
+        return "四"
     elif( n == 5 ):
-        return "５"
+        return "五"
     elif( n == 6 ):
-        return "６"
+        return "六"
     elif( n == 7 ):
-        return "７"
+        return "七"
     elif( n == 8 ):
-        return "８"
+        return "八"
     elif( n == 9 ):
-        return "９"
+        return "九"
+    elif( n == 10 ):
+        return "十"
     else:
         print "Error! Unsupported digit %d!" %n
         sys.exit(0)
@@ -240,6 +252,8 @@ def res2word(pa, wordLen):
             word = "強襲"
         elif( res == "IF" ):
             word = "內飛"
+        elif( res == "FO" ):
+            word = "界飛"
         else:
             print "Error! Unknown res notation %s" %res
             sys.exit(0)  
@@ -308,7 +322,8 @@ def dump_player_statistic(team):
     posts += "Batting:\n"
     posts += "          PA  AB  1B  2B  3B  HR  DP RBI RUN  BB   K  SF\n"
     for p in team.batters:
-        line = "%2s. %-6s" %(p.order, p.number)
+        space = " " * (6 - big5len(p.number) )
+        line = "%2s. %s%s" %(p.order, p.number, space)
         line += "%2d  %2d  %2d  %2d  %2d  %2d  %2d %3d %3d  %2d   %d  %2d\n" %(p.PA, p.AB, p.B1, p.B2, p.B3, p.HR, p.DP, p.RBI, p.RUN, p.BB, p.K, p.SF)
         posts += line
 
@@ -316,7 +331,7 @@ def dump_player_statistic(team):
     posts += " No.    IP  PA   H  HR  BB   K  Run  ER  GO  FO\n" 
     # Pitcher Statistic
     for p in team.pitchers:
-        posts += " %-6s%3s  %2d  %2d  %2d  %2d  %2d  %3d  %2d  %2d  %2d\n" %(p.number, p.IP(), p.TBF, p.H, p.HR, p.BB, p.K, p.Run, p.ER, p.GO, p.FO)
+        posts += " %-8s%3s  %2d  %2d  %2d  %2d  %2d  %3d  %2d  %2d  %2d\n" %(p.number, p.IP(), p.TBF, p.H, p.HR, p.BB, p.K, p.Run, p.ER, p.GO, p.FO)
 
     return posts
 
