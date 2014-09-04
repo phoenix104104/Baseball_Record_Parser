@@ -4,10 +4,10 @@ import sys
 
 class Game:
     def __init__(self):
-        self.team1 = None
-        self.team2 = None
-        self.total_innings = 0
-        self.score_board = []
+        self.team1          = None
+        self.team2          = None
+        self.total_innings  = 0
+        self.score_board    = []
 
 class Team:
     def __init__(self):
@@ -39,43 +39,43 @@ class Team:
 
 class PA:
     def __init__(self):
-        self.isPlay     = False     # used for no-play batter
-        self.pos        = None      # hit-ball direction
-        self.result     = None      # result string
-        self.rbi        = 0         # RBI
-        self.run        = 0         # RUN
-        self.out        = 0         # number of outs in this play
-        self.endInning  = ""        # should be 0, '#' or '!'
-        self.note       = ""        # 0 or *'
-        self.inning     = -1        # inning
-        self.column     = 0         # column in printed table
-        self.raw_str    = ""        # pa code string
+        self.isPlay         = False     # used for no-play batter
+        self.pos            = None      # hit-ball direction
+        self.result         = None      # result string
+        self.rbi            = 0         # RBI
+        self.run            = 0         # RUN
+        self.out            = 0         # number of outs in this play
+        self.endInning      = ""        # should be 0, '#' or '!'
+        self.note           = ""        # 0 or *'
+        self.inning         = -1        # inning
+        self.column         = 0         # column in printed table
+        self.raw_str        = ""        # pa code string
         self.change_pitcher = None
 
 class Batter:
-    def __init__(self, order, number):
+    def __init__(self, order, number, pos):
         self.order  = order
         self.number = number
-        self.PAs = []
-        self.PA  = 0
-        self.AB  = 0
-        self.B1  = 0
-        self.B2  = 0
-        self.B3  = 0
-        self.HR  = 0
-        self.DP  = 0
-        self.RBI = 0
-        self.RUN = 0
-        self.BB  = 0
-        self.K   = 0
-        self.SF  = 0    # sacrificed fly 高飛犧牲打
-        self.CB  = 0    # combacker 投手強襲球
-        self.IB  = 0    # illegal batted 違規擊球
-        self.IF  = 0    # infield fly 內野高飛必死球
+        self.pos    = pos
+        self.PAs    = []
+        self.PA     = 0
+        self.AB     = 0
+        self.B1     = 0
+        self.B2     = 0
+        self.B3     = 0
+        self.HR     = 0
+        self.DP     = 0
+        self.RBI    = 0
+        self.RUN    = 0
+        self.BB     = 0
+        self.K      = 0
+        self.SF     = 0    # sacrificed fly 高飛犧牲打
+        self.CB     = 0    # combacker 投手強襲球
+        self.IB     = 0    # illegal batted 違規擊球
+        self.IF     = 0    # infield fly 內野高飛必死球
+        self.FO     = 0    # foul out 界外飛球出局
 
     def AddPA(self, pa):
-        if (pa.result not in ['1B', '2B', '3B', 'HR', 'SF', 'BB', 'K', 'G', 'F', 'DP', 'FC', 'E', 'IB', 'CB', 'IF']):
-            sys.exit('Error! Not support PA notation %s in %s' %(pa.result, pa.raw_str))
 
         self.PAs.append(pa)
         if( pa.isPlay ):
@@ -104,6 +104,8 @@ class Batter:
                     self.IB += 1
                 elif( pa.result == "IF" ):
                     self.IF += 1
+                elif( pa.result == "FO" ):
+                    self.FO += 1
 
             self.RBI += pa.rbi
             self.RUN += pa.run
@@ -163,14 +165,12 @@ class Pitcher:
                 self.K += 1
             elif( pa.result == "G" ):
                 self.GO += 1
-            elif( pa.result in ("F", "SF") ):
+            elif( pa.result in ("F", "SF", "IF", "FO") ):
                 self.FO += 1
             elif( pa.result == "DP" ): # TODO: need to seperate G-DP or F-DP ?
                 self.GO += 2
             elif( (pa.result == "FC") & (pa.out > 0) ):
                 self.GO += 1
-            elif( pa.result == "IF" ):  # Infield Fly 內野高飛必死球
-                self.FO += 1
             
             #print "pitcher add PA(%s), out = %d" %(pa.raw_str, pa.out)
             self.Out += pa.out
