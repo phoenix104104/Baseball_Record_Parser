@@ -375,6 +375,42 @@ def parse_game_data(game_data):
     '''
     return game
 
+def seperate_web_string(string_data):
+    
+    str_table = []
+    lines = string_data.split('\n')
+    for line in lines:
+        data = line.split()
+        data = filter(None, data)
+        if len(data) != 0:
+            str_table.append(data)
+    
+    return str_table
+    
+def parse_record_from_web(away_team_name, away_string, home_team_name, home_string):
+    
+    away_str_table = seperate_web_string(away_string)
+    home_str_table = seperate_web_string(home_string)
+
+    game, err = make_game(away_team_name, away_str_table, home_team_name, home_str_table)
+    
+    if( err != "" ):
+        return None, err
+
+    game.away.compute_statistic()
+    game.home.compute_statistic()
+
+    make_web_table(game.away)
+    make_web_table(game.home)
+
+    isColor = True
+    post_ptt = make_PTT_format(game, isColor)
+    post_ptt = post_ptt.replace('\x1b', '\025')
+    game.post_ptt = post_ptt
+    #post_db  = make_database_format(game)
+
+    return game, err
+
 def main():
     
     parser = argparse.ArgumentParser()

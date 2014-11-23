@@ -12,11 +12,15 @@ def index():
     
     if( request.method == "POST" ):
         print "get content from html..."
+
+        game_type   = request.form["game_type"].encode('utf8')
+        date        = request.form("date")
+        location    = request.form("location")
+        game_id     = request.form("game_id")
         away_record = request.form["away_record"].encode('utf8')
-        print "data1 = " + data1
         home_record = request.form["home_record"].encode('utf8')
-    
-        data_all = data1 + '\n' + data2
+        
+        print date
     else:
         data_all = 'hello'
 
