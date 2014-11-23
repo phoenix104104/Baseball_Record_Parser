@@ -1,4 +1,4 @@
-T1  資工
+T  資工
 p   24
 1   74  7-2B-r      8-2B-2r     5-F-x       6-E-r
 2   36  3-F-x       10-1B       8-1B-r      1-G-x
@@ -12,7 +12,7 @@ p   24
 10  n   K-x         K-x         BB
 11  ob  6-1B-xr*    BB-r        8-1B-rx*
 
-T2 OP牙
+T OP牙
 P   33
 1   20  BB-r    K-x     5-G-x
 2   25  7-2B-1r 7-2B    10-1B

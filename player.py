@@ -53,7 +53,7 @@ class PA:
         self.change_pitcher = None
 
 class Batter:
-    def __init__(self, order, number, pos):
+    def __init__(self, order, number='', pos=''):
         self.order  = order
         self.number = number
         self.pos    = pos

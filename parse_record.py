@@ -62,7 +62,7 @@ def change_batter(pa_strs):
 def parse_PA(team, order_table, order, turn, inning, curr_order):
     
     pa_str = order_table[order][turn].upper()
-    s = pa_str.split('-')
+    s = pa_str.split('/')
     
     pa = PA()
     pa.inning = inning
@@ -334,15 +334,36 @@ def load_data_from_string(string_data):
     
     return raw_data
 
+def make_team(team_name, str_table):
+
+    team = Team()
+    team.name = team_name
+
+    for r in range(len(str_table)):
+
+        row = str_table[r]
+
+        order = str(r+1)
+        no    = row[0]
+        pos   = row[1].upper()
+        PAs   = row[2:]
+        team.batters.append( Batter(order, no, pos) )
+        team.order_table.append( PAs )
+
+        if( pos == 'P' ):
+            team.pitchers.append( Pitcher(no) )
+
+    return team
+
 def parse_game_data(game_data):
 
     game = Game()
-    team_list = parse_teams(game_data)
-
-    if( len(team_list) == 1 ):
-        game.team1 = parse_order_table(team_list[0])
-        parse_column(game.team1)
-
+    team = make_team('RB', game_data)
+    
+    #if( len(team_list) == 1 ):
+    game.team1 = parse_order_table(team)
+    parse_column(game.team1)
+    '''
     elif( len(team_list) == 2 ):
         team1 = team_list[0]
         team2 = team_list[1]
@@ -351,7 +372,7 @@ def parse_game_data(game_data):
     
         parse_pitcher_info(game.team1, game.team2.pitchers)  
         parse_pitcher_info(game.team2, game.team1.pitchers)  
-    
+    '''
     return game
 
 def main():
