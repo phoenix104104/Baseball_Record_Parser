@@ -14,9 +14,9 @@ def index():
         print "get content from html..."
 
         game_type   = request.form["game_type"].encode('utf8')
-        date        = request.form("date")
-        location    = request.form("location")
-        game_id     = request.form("game_id")
+        date        = request.form["date"]
+        location    = request.form["location"].encode('utf8')
+        game_id     = request.form["game_id"]
         away_record = request.form["away_record"].encode('utf8')
         home_record = request.form["home_record"].encode('utf8')
         
