@@ -17,11 +17,6 @@ body {
     padding-bottom: 30px !important;
 }
 
-.row {
-    margin: 10px;
-    padding: 0px;
-    height: 660px;
-}
 
 .column {
     float: left;
@@ -63,3 +58,14 @@ h3 {
     margin-top: -25px;
 }
 
+.record_table{
+    font-family: "Courier New";
+    width: 100%;
+}
+
+.center-block{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}

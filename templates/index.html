@@ -4,15 +4,18 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="author" content="phoenix04104">
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css" rel="stylesheet">
     <link href="/static/css/record.css" rel="stylesheet">
+    <link href="/static/css/jquery-linedtextarea.css" rel="stylesheet">
 	<title>Baseball Record</title>
 
 </head>
 <body>
     <script src="/static/js/jquery-1.11.1.min.js"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <script src="/static/js/record.js"></script>
+    <script src="/static/js/jquery-linedtextarea.js"></script>
     
     
     <div class="container">
@@ -26,28 +29,25 @@
                 </ul>
             </div>
         </div>
+    </div>
+
+    <div class="container">
         <div class="jumbotron">
             <div class="row">
-                <div class="column"> 
-                    <div class="text-area">
-                        <h3 class="box-title">Team1</h3>
-                        <textarea class="form-control" id="team1" rows="12"></textarea>
-                    </div>
-                    <div class="text-area">
-                        <h3 class="box-title">Team2</h3>
-                        <textarea class="form-control" id="team2" rows="12"></textarea>
-                    </div>
+                <div class="col-md-6"> 
+                    <textarea class="record_table lined" name="team1" rows="12"></textarea>
                 </div>
-                <div class="controller"> 
-                    <div class="controller-buttons">
-                        <input type="button" class="btn btn-info" id="parse" value="=>">
-                    </div>
+                <div class="col-md-6"> 
+                    <textarea class="record_table lined" name="team2" rows="12"></textarea>
                 </div>
-                <div class="column">
-                    <div class="text-area">
-                        <h3 class="box-title">Output</h3>
-                        <textarea class="form-control" id="output" rows="27"></textarea>
-                    </div>
+            </div>
+
+            <br>
+
+            <div class="row">
+                <div class="center-block">
+				    <input type="submit" class="btn btn-primary" name="preview" value="預覽">
+				    <input type="submit" class="btn btn-success" name="download" value="下載">
                 </div>
             </div>
         </div>

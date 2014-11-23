@@ -1,15 +1,28 @@
-$(document).ready( function() {
+$(document).ready(function() {
+    $("textarea").keydown(function(e) {
+        
+        if(e.keyCode === 9) { // tab was pressed
+            // get caret position/selection
+            var start = this.selectionStart;
+                end = this.selectionEnd;
 
-    $("#parse").click( function() {
-        var content1 = $('#team1').val();
-        var content2 = $('#team2').val();
-        if( content1.length ) {
-            $.post('convert.json', 
-                { text1: content1, text2: content2 }, 
-                function(data, textStatus) {
-                    $('#output').val(data.result);
-                });
+            var $this = $(this);
+
+            // set textarea value to: text before caret + tab + text after caret
+            $this.val($this.val().substring(0, start)
+                        + "\t"
+                        + $this.val().substring(end));
+
+            // put caret at right position again
+            this.selectionStart = this.selectionEnd = start + 1;
+
+            // prevent the focus lose
+            return false;
         }
+    });
+
+    $(".lined").linedtextarea({
+        selectedClass: 'lineselect'
     });
 
 });

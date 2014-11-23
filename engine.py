@@ -7,26 +7,28 @@ import re
 
 app = Flask(__name__)
 
-@app.route('/')
-def hello():
-    return render_template("index.html")
-
-@app.route('/convert.json', methods=["POST"])
-def convert():
-    print "get content from html..."
-    data1 = request.form["text1"].encode('utf8')
-    data2 = request.form["text2"].encode('utf8')
+@app.route('/', methods=["GET","POST"])
+def index():
     
-    data_all = data1 + '\n' + data2
+    if( request.method == "POST" ):
+        print "get content from html..."
+        data1 = request.form["team1"].encode('utf8')
+        print "data1 = " + data1
+        data2 = request.form["team2"].encode('utf8')
+    
+        data_all = data1 + '\n' + data2
+    else:
+        data_all = 'hello'
 
     print "parse game data..."
-    raw_data = load_data_from_string(data_all)
-    game = parse_game_data(raw_data)
-    post_ptt = make_PTT_format(game, 0)
-
-    return jsonify({'result': post_ptt})
+    #raw_data = load_data_from_string(data_all)
+    #game = parse_game_data(raw_data)
+    #post_ptt = make_PTT_format(game, 0)
+    
+    print data_all
+    return render_template("index.html", data=data_all)
 
 if __name__ == "__main__":
     app.debug = True
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=80)
 
