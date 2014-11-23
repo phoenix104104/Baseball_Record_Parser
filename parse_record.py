@@ -308,7 +308,7 @@ def parse_order_table(team, team_opp=None):
     for i in range(7-score_inn):
         team.scores.append(0)
     
-    return team
+    .return team
 
 def load_data_from_file(fileName):
 

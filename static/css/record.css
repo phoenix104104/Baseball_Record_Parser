@@ -1,11 +1,10 @@
 body {
     padding-top: 20px;
     padding-bottom: 20px;
-    background: #A9CFFF;
 }
 
 .navbar-brand {
-    color: #333333 !important;
+/*    color: #333333 !important;*/
     font-size: 25px;
     line-height: 25px;
 }
@@ -68,4 +67,14 @@ h3 {
     margin-left: auto;
     margin-right: auto;
     text-align: center;
+}
+
+table th, td{
+    text-align: center !important;
+}
+
+.title{
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
 }

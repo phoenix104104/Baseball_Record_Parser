@@ -12,15 +12,15 @@ def index():
     
     if( request.method == "POST" ):
         print "get content from html..."
-        data1 = request.form["team1"].encode('utf8')
+        away_record = request.form["away_record"].encode('utf8')
         print "data1 = " + data1
-        data2 = request.form["team2"].encode('utf8')
+        home_record = request.form["home_record"].encode('utf8')
     
         data_all = data1 + '\n' + data2
     else:
         data_all = 'hello'
 
-    print "parse game data..."
+    #print "parse game data..."
     #raw_data = load_data_from_string(data_all)
     #game = parse_game_data(raw_data)
     #post_ptt = make_PTT_format(game, 0)
