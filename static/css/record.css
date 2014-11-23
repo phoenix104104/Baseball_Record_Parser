@@ -41,6 +41,9 @@ h3 {
     display: inline-block;
     width: 100%;
     float: left;
+    font-family: "Courier New";
+    text-align: justify;
+    text-justify: distribute;
 }
 
 .controller {
