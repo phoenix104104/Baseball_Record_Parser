@@ -334,10 +334,11 @@ def load_data_from_string(string_data):
     
     return raw_data
 
-def make_team(team_name, str_table):
+def make_team(team_name, scores, str_table):
 
     team = Team()
     team.name = team_name
+    team.scores = scores
 
     for r in range(len(str_table)):
 
@@ -375,6 +376,52 @@ def parse_game_data(game_data):
     '''
     return game
 
+
+def make_game(away_team_name, away_str_table, home_team_name, home_str_table):
+
+    game = Game()
+    err = ""
+
+    away = make_team(away_team_name, away_str_table)
+    home = make_team(home_team_name, home_str_table)
+
+    if( len(away.pitchers) == 0 ):
+        err = away.name + "沒有先發投手"
+        return game, err
+
+    if( len(home.pitchers) == 0 ):
+        err = home.name + "沒有先發投手"
+        return game, err
+
+    away, home.E, err = parse_order_table(away)
+    if( err != "" ):
+        err += " in Away Record"
+        return game, err
+
+    home, away.E, err = parse_order_table(home)
+    if( err != "" ):
+        err += " in Home Record"
+        return game, err
+        
+    err = parse_pitcher_info(away, home.pitchers)  
+    if( err != "" ):
+        err += " in Away Record"
+        return game, err
+        
+    err = parse_pitcher_info(home, away.pitchers)  
+    if( err != "" ):
+        err += " in Home Record"
+        return game, err
+        
+    # calculate total scores
+    away.compute_statistic()
+    home.compute_statistic()
+
+    game.away = away
+    game.home = home
+
+    return game, err
+
 def seperate_web_string(string_data):
     
     str_table = []
@@ -392,7 +439,15 @@ def parse_record_from_web(away_team_name, away_scores, away_record, home_team_na
     away_str_table = seperate_web_string(away_record)
     home_str_table = seperate_web_string(home_record)
     
-    print away_str_table
+    away = make_team(away_team_name, away_scores, away_str_table)
+    home = make_team(home_team_name, home_scores, home_str_table)
+
+    if( len(away.order_table) == 0 && len(home.order_table) == 0 ):
+        err = "沒有記錄"
+        game = None
+    elif( len(away.order_table) == 0 && len(home.order_table) != 0 ):
+        game, err = make_game_single_team() /////////TODO
+
     '''   
     game, err = make_game(away_team_name, away_str_table, home_team_name, home_str_table)
     
@@ -414,6 +469,7 @@ def parse_record_from_web(away_team_name, away_scores, away_record, home_team_na
     return game, err
     '''
     return 0, 0
+
 def main():
     
     parser = argparse.ArgumentParser()
