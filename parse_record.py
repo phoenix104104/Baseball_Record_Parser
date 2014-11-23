@@ -308,7 +308,7 @@ def parse_order_table(team, team_opp=None):
     for i in range(7-score_inn):
         team.scores.append(0)
     
-    .return team
+    return team
 
 def load_data_from_file(fileName):
 
@@ -387,11 +387,13 @@ def seperate_web_string(string_data):
     
     return str_table
     
-def parse_record_from_web(away_team_name, away_string, home_team_name, home_string):
+def parse_record_from_web(away_team_name, away_scores, away_record, home_team_name, home_scores, home_record):
     
-    away_str_table = seperate_web_string(away_string)
-    home_str_table = seperate_web_string(home_string)
-
+    away_str_table = seperate_web_string(away_record)
+    home_str_table = seperate_web_string(home_record)
+    
+    print away_str_table
+    '''   
     game, err = make_game(away_team_name, away_str_table, home_team_name, home_str_table)
     
     if( err != "" ):
@@ -410,7 +412,8 @@ def parse_record_from_web(away_team_name, away_string, home_team_name, home_stri
     #post_db  = make_database_format(game)
 
     return game, err
-
+    '''
+    return 0, 0
 def main():
     
     parser = argparse.ArgumentParser()

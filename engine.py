@@ -1,11 +1,23 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, jsonify
-from parse_record import load_data_from_string, parse_game_data
-from dump_record import make_PTT_format, make_database_format
+from parse_record import parse_record_from_web
 import re
 
 app = Flask(__name__)
+
+def gather_team_info(request, HA):
+
+    record_str = request.form[HA + "_record"]
+    team_name  = request.form[HA + "_team_name"]
+    scores = []
+    for i in range(1, 8):
+        score = request.form[HA + "_score_" + str(i)]
+        if( not score ):
+            score = 0
+        scores.append(int(score))
+
+    return (team_name, scores, record_str)
 
 @app.route('/', methods=["GET","POST"])
 def index():
@@ -17,10 +29,14 @@ def index():
         date        = request.form["date"]
         location    = request.form["location"].encode('utf8')
         game_id     = request.form["game_id"]
-        away_record = request.form["away_record"].encode('utf8')
-        home_record = request.form["home_record"].encode('utf8')
+        game_id = str(date).replace("-", "") + str(game_id)
+
+        (away_team_name, away_scores, away_record) = gather_team_info(request, "away")
+        (home_team_name, home_scores, home_record) = gather_team_info(request, "home")
         
-        print date
+        record, err = parse_record_from_web(away_team_name, away_scores, away_record, \
+                                            home_team_name, home_scores, home_record)
+
     else:
         data_all = 'hello'
 
@@ -29,10 +45,12 @@ def index():
     #game = parse_game_data(raw_data)
     #post_ptt = make_PTT_format(game, 0)
     
-    print data_all
-    return render_template("index.html", data=data_all)
+    return render_template("index.html")
+
+
+
 
 if __name__ == "__main__":
     app.debug = True
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=8000)
 
