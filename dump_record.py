@@ -2,49 +2,47 @@
 # -*- coding: utf8 -*-
 import sys, os
 
-def make_PTT_format(game, isOneTeam=False, isAddColor=True):
+
+def make_PTT_format(game, isAddColor=True):
     
     posts = ""
-    if( isOneTeam ):
-        posts += make_team_table(game.team1, isAddColor)
-    else:
-        posts += make_PTT_score_board(game)
+    posts += make_PTT_score_board(game)
+    posts += "\n"
+    if( game.away.hasRecord() ):
+        posts += game.away.name + "\n"
+        posts += make_team_PTTtable(game.away, isAddColor)
+        posts += "\n\n"
+        posts += make_pitcher_PTTtable(game.away.pitchers)
         posts += "\n"
-        posts += game.team1.name + "\n"
-        posts += make_team_table(game.team1, isAddColor)
+    if( game.home.hasRecord() ):
+        posts += game.home.name + "\n"
+        posts += make_team_PTTtable(game.home, isAddColor)
         posts += "\n\n"
-        posts += make_pitcher_table(game.team1.pitchers)
-        posts += "--------------------------------------------------------------------------------\n\n"
-        posts += game.team2.name + "\n"
-        posts += make_team_table(game.team2, isAddColor)
-        posts += "\n\n"
-        posts += make_pitcher_table(game.team2.pitchers)
+        posts += make_pitcher_PTTtable(game.home.pitchers)
         posts += '\n'
 
     return posts
 
 
-def make_database_format(game, isOneTeam=False):
+def make_database_format(game):
 
-    if( isOneTeam ):
-        posts = dump_player_statistic(game.team1)
-    else:
-        posts = make_score_board(game)
-        posts += "\n"
-        posts += dump_player_statistic(game.team1)
-        posts += "\n"
-        posts += dump_player_statistic(game.team2)
+    posts = make_score_board(game)
+    posts += "\n"
+    posts += dump_player_statistic(game.away)
+    posts += "\n"
+    posts += dump_player_statistic(game.home)
+
     return posts
 
 def make_score_board(game):
 
     posts = ""
-    posts += "%s\t" %(game.team1.name)
-    for s in game.team1.scores:
+    posts += "%s\t" %(game.away.name)
+    for s in game.away.scores:
         posts += "%4d" %s
     posts += "\n"
-    posts += "%s\t" %(game.team2.name)
-    for s in game.team2.scores:
+    posts += "%s\t" %(game.home.name)
+    for s in game.home.scores:
         posts += "%4d" %s
     posts += "\n"
     return posts
@@ -55,21 +53,100 @@ def make_PTT_score_board(game):
     vv = "│"
     vh = "┼"
     posts  = "      %s１%s２%s３%s４%s５%s６%s７%s　%sＲ%sＨ%sＥ\n" %(vv, vv, vv, vv, vv, vv, vv, vv, vv, vv, vv)
-    posts += "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n" %(hh, hh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh)
-    posts += " %s %s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s　%s%2d%s%2d%s%2d\n" %(game.team1.name, vv, game.team1.scores[0], vv, game.team1.scores[1], vv, game.team1.scores[2], vv, game.team1.scores[3], vv, game.team1.scores[4], vv, game.team1.scores[5], vv, game.team1.scores[6], vv, vv, game.team1.Runs(), vv, game.team1.H, vv, game.team1.E)
-    posts += "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n" %(hh, hh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh)
-    posts += " %s %s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s　%s%2d%s%2d%s%2d\n" %(game.team2.name, vv, game.team2.scores[0], vv, game.team2.scores[1], vv, game.team2.scores[2], vv, game.team2.scores[3], vv, game.team2.scores[4], vv, game.team2.scores[5], vv, game.team2.scores[6], vv, vv, game.team2.Runs(), vv, game.team2.H, vv, game.team2.E)
 
+    for team in [game.away, game.home]:
+        posts += "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n" %(hh, hh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh)
+        posts += " %s %s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s　%s%2d%s%2d%s%2d\n" %(team.name, vv, team.scores[0], vv, team.scores[1], vv, team.scores[2], vv, team.scores[3], vv, team.scores[4], vv, team.scores[5], vv, team.scores[6], vv, vv, team.R, vv, team.H, vv, team.E)
+    
     return posts
 
 def big5len(string):
     return len(string.decode('utf8').encode('big5') )
 
 
-def make_team_table(team, isAddColor=True):
+def make_web_table(team):
+
+    team.batter_table  = make_batter_table(team)
+    team.pitcher_table = make_pitcher_table(team)
+
+def make_batter_table(team):
 
     col2inn = team.col2inn
-    nPlayer = team.nBatter()
+    player  = team.batters
+
+    # --- initialize table
+    table = []
+
+    # --- inning title
+    row = [""] * 11
+    offset = 2
+    row[offset] = (digit2FullWidth(1) + "局")
+    for n in range(1, len(col2inn)):
+        if( col2inn[n] != col2inn[n-1] ):
+            row[offset+n] = (digit2FullWidth(col2inn[n]) + "局")
+
+    table.append(row)
+
+    for n in range(len(player)):
+        row = [""] * 13
+        
+        if( player[n].order == 'R' ):
+            order = "代"
+        else:
+            order = player[n].order
+
+        row[0] = order
+
+
+        if( player[n].number == 'N' ):
+            num = "新生"
+        else:
+            num = player[n].number
+
+        row[1] = num
+
+        for i in range(len(player[n].PAs) ):
+            pa = player[n].PAs[i]
+            word, word_len = PA2Character(pa)
+            row[pa.column+2] = "%s" %word
+
+        table.append(row)
+
+    return table
+
+
+def make_pitcher_table(team):
+
+    table = []
+    pitchers = team.pitchers
+
+    row = ["投手", "投球局數", "面對打席", "被安打", "被全壘", "四壞", "三振", "失分", "自責", "滾地", "飛球", "ERA"]
+    table.append(row)
+
+    for pitcher in pitchers:
+        row = []
+        row.append(pitcher.number)
+        row.append(pitcher.IP)
+        row.append(pitcher.TBF)
+        row.append(pitcher.H)
+        row.append(pitcher.HR)
+        row.append(pitcher.BB)
+        row.append(pitcher.K)
+        row.append(pitcher.Run)
+        row.append(pitcher.ER)
+        row.append(pitcher.GO)
+        row.append(pitcher.FO)
+        row.append("%.2f" %pitcher.ERA)
+        
+        table.append(row)
+
+    return table
+
+
+def make_team_PTTtable(team, isAddColor=True):
+
+    col2inn = team.col2inn
+    nPlayer = team.nBatters
     player  = team.batters
 
     posts = " "*15
@@ -77,7 +154,7 @@ def make_team_table(team, isAddColor=True):
         
     for n in range(1, len(col2inn)):
         if( col2inn[n] == col2inn[n-1] ):
-            posts += (" "*10)
+            posts += (" "*8)
         else:
             posts += (digit2FullWidth(col2inn[n]) + "局    ")
 
@@ -119,13 +196,13 @@ def make_team_table(team, isAddColor=True):
 
     return posts
 
-def make_pitcher_table(pitchers):
+def make_pitcher_PTTtable(pitchers):
 
     posts = ""
     posts += "  投    投局 面打  被   被   四  三  失  自  滾  飛   Ｅ\n"
     posts += "  手    球數 對席 安打 全壘  壞  振  分  責  地  球   RA\n"
     for pitcher in pitchers:
-        posts += "  %-4s   %3s  %2d   %2d   %2d   %2d  %2d  %2d  %2d  %2d  %2d  %.2f\n" %(pitcher.number, pitcher.IP(), pitcher.TBF, pitcher.H, pitcher.HR, pitcher.BB, pitcher.K, pitcher.Run, pitcher.ER, pitcher.GO, pitcher.FO, pitcher.getERA())
+        posts += "  %-4s   %3s  %2d   %2d   %2d   %2d  %2d  %2d  %2d  %2d  %2d  %.2f\n" %(pitcher.number, pitcher.IP, pitcher.TBF, pitcher.H, pitcher.HR, pitcher.BB, pitcher.K, pitcher.Run, pitcher.ER, pitcher.GO, pitcher.FO, pitcher.getERA())
     
     return posts
 
@@ -277,7 +354,7 @@ def end2word(pa):
 
     return word, len(word)
 
-def PA2Character(pa, isAddColor):
+def PA2Character(pa, isAddColor=False):
     if( not pa.isPlay ):
         word = ("　　") # Full-Width white
         word_len = 4
@@ -331,7 +408,7 @@ def dump_player_statistic(team):
     posts += " No.    IP  PA   H  HR  BB   K  Run  ER  GO  FO\n" 
     # Pitcher Statistic
     for p in team.pitchers:
-        posts += " %-8s%3s  %2d  %2d  %2d  %2d  %2d  %3d  %2d  %2d  %2d\n" %(p.number, p.IP(), p.TBF, p.H, p.HR, p.BB, p.K, p.Run, p.ER, p.GO, p.FO)
+        posts += " %-8s%3s  %2d  %2d  %2d  %2d  %2d  %3d  %2d  %2d  %2d\n" %(p.number, p.IP, p.TBF, p.H, p.HR, p.BB, p.K, p.Run, p.ER, p.GO, p.FO)
 
     return posts
 

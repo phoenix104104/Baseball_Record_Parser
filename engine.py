@@ -1,23 +1,37 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, jsonify
-from parse_record import parse_record_from_web
+from parse_record import parse_game_record
 import re
 
 app = Flask(__name__)
 
+def text_to_table(text):
+    
+    table = []
+    lines = text.split('\n')
+    for line in lines:
+        data = line.split()
+        data = filter(None, data)
+        if len(data) != 0:
+            table.append(data)
+    
+    return table
+
 def gather_team_info(request, HA):
 
-    record_str = request.form[HA + "_record"]
     team_name  = request.form[HA + "_team_name"]
     scores = []
     for i in range(1, 8):
         score = request.form[HA + "_score_" + str(i)]
         if( not score ):
-            score = 0
+            break
         scores.append(int(score))
 
-    return (team_name, scores, record_str)
+    record_str = request.form[HA + "_record"]
+    table = text_to_table(record_str)
+
+    return (team_name, scores, table)
 
 @app.route('/', methods=["GET","POST"])
 def index():
@@ -31,11 +45,11 @@ def index():
         game_id     = request.form["game_id"]
         game_id = str(date).replace("-", "") + str(game_id)
 
-        (away_team_name, away_scores, away_record) = gather_team_info(request, "away")
-        (home_team_name, home_scores, home_record) = gather_team_info(request, "home")
+        (away_team_name, away_scores, away_table) = gather_team_info(request, "away")
+        (home_team_name, home_scores, home_table) = gather_team_info(request, "home")
         
-        record, err = parse_record_from_web(away_team_name, away_scores, away_record, \
-                                            home_team_name, home_scores, home_record)
+        record, err = parse_game_record(away_team_name, away_scores, away_table, \
+                                        home_team_name, home_scores, home_table)
 
     else:
         data_all = 'hello'

@@ -3,8 +3,8 @@
 
 import sys, os
 import argparse
-from player import Game, Team, Batter, Pitcher, PA
-from dump_record import make_PTT_format, make_database_format
+from player import Game, Team, rdBatter, rdPitcher, PA
+from dump_record import make_PTT_format, make_database_format, make_web_table
 
 def check_least_out(pa):
     out = 0
@@ -90,7 +90,7 @@ def parse_PA(team, order, turn, inning, curr_order):
 
                 batter = team.find_batter(no)
                 if( batter == None or no == "OB" ): # may exist multiple OB
-                    batter = Batter('R', no)
+                    batter = rdBatter('R', no)
                     team.batters.insert(idx+1, batter)
 
                 curr_order[order] = batter
@@ -125,34 +125,10 @@ def parse_PA(team, order, turn, inning, curr_order):
         pa.out = least_out
 
     err = batter.AddPA(pa)
-    order_table[order][turn] = [batter, pa]
+    team.order_table[order][turn] = [batter, pa]
     return pa, err
 
 
-def parse_teams(game_data):
-
-    team_list = []
-
-    for data in game_data:
-        
-        if data[0] == 'T':
-            team = Team()
-            team.name = data[1]
-            team_list.append(team)
-
-        elif data[0].upper() == 'P':
-            no = data[1].upper()
-            team.pitchers.append( Pitcher(no) )
-
-        elif data[0].isdigit():
-            order = data[0].upper()
-            pos   = data[1]
-            no    = data[2]
-            PAs   = data[3:]
-            team.batters.append( Batter(order, no, pos) )
-            team.order_table.append( PAs )
-
-    return team_list
 
 def parse_column(team):
     # parse inning information
@@ -163,7 +139,7 @@ def parse_column(team):
     pa_count = 0
     isER     = True
     nOrder   = len(team.order_table)
-    nBatter  = team.nBatter()
+    nBatter  = team.num_of_batters()
     supp_out = 0    # supposed out
     col2inn  = []
 
@@ -204,7 +180,7 @@ def parse_pitcher_info(team, pitchers):
     order    = 0
     isER     = True
     nOrder   = len(team.order_table)
-    nBatter  = team.nBatter()
+    nBatter  = team.num_of_batters()
     supp_out = 0    # supposed out
     
     pitcher = pitchers[0]
@@ -225,7 +201,7 @@ def parse_pitcher_info(team, pitchers):
                     break
                     
             if( is_new_pitcher ):
-                pitcher = Pitcher(no)
+                pitcher = rdPitcher(no)
                 pitchers.append( pitcher )
 
         err = pitcher.AddPa(pa, isER)
@@ -286,7 +262,7 @@ def parse_order_table(team):
     team_H = 0
     opp_E = 0
     while(True):
-        pa, err = parse_PA(team, team.order_table, order, turn, inning, curr_order)
+        pa, err = parse_PA(team, order, turn, inning, curr_order)
         if( err != "" ):
             err += " - row %d" %(order+1)
             break
@@ -313,32 +289,11 @@ def parse_order_table(team):
             turn += 1
     
     team.H  = team_H
-
+    parse_column(team)
+    print team.col2inn
     return opp_E, err
 
-def load_data_from_file(fileName):
 
-    raw_data = []
-    with open(fileName) as f:
-        print "Load " + fileName
-        for line in f:
-            data = list(line.split())
-            if len(data) != 0:
-                raw_data.append(data)
-                
-    return raw_data
-
-def load_data_from_string(string_data):
-    
-    raw_data = []
-    lines = string_data.split('\n')
-    for line in lines:
-        data = line.split()
-        data = filter(None, data)
-        if len(data) != 0:
-            raw_data.append(data)
-    
-    return raw_data
 
 def make_team(team_name, scores, str_table):
 
@@ -360,33 +315,14 @@ def make_team(team_name, scores, str_table):
         no    = row[0]
         pos   = row[1].upper()
         PAs   = row[2:]
-        team.batters.append( Batter(order, no, pos) )
+        team.batters.append( rdBatter(order, no, pos) )
         team.order_table.append( PAs )
 
         if( pos == 'P' ):
-            team.pitchers.append( Pitcher(no) )
+            team.pitchers.append( rdPitcher(no) )
 
     return team
 
-def parse_game_data(game_data):
-
-    game = Game()
-    team = make_team('RB', game_data)
-    
-    #if( len(team_list) == 1 ):
-    game.team1 = parse_order_table(team)
-    parse_column(game.team1)
-    '''
-    elif( len(team_list) == 2 ):
-        team1 = team_list[0]
-        team2 = team_list[1]
-        game.team1 = parse_order_table(team1, team2)
-        game.team2 = parse_order_table(team2, team1)
-    
-        parse_pitcher_info(game.team1, game.team2.pitchers)  
-        parse_pitcher_info(game.team2, game.team1.pitchers)  
-    '''
-    return game
 
 
 def make_game(away, home):
@@ -398,37 +334,45 @@ def make_game(away, home):
         err = "Both record not exist"
         return game, err
 
-    if( len(away.pitchers) == 0 ):
-        err = away.name + "沒有先發投手"
-        return game, err
+    ## handle 1 team case
+    if( not away.hasRecord() and home.hasRecord() ):
+        away.pitchers.append( rdPitcher('00') )
+    if( away.hasRecord() and not home.hasRecord() ):
+        home.pitchers.append( rdPitcher('00') )
 
-    if( len(home.pitchers) == 0 ):
-        err = home.name + "沒有先發投手"
-        return game, err
-    
+
     if( away.hasRecord() ):
-        away, home.E, err = parse_order_table(away)
+        if( len(away.pitchers) == 0 ):
+            err = away.name + "沒有先發投手"
+            return game, err
 
-    if( err != "" ):
-        err += " in Away Record"
-        return game, err
+        home.E, err = parse_order_table(away)
+        if( err != "" ):
+            err += " in Away Record"
+            return game, err
+
+        err = parse_pitcher_info(away, home.pitchers)  
+        if( err != "" ):
+            err += " in Away Record"
+            return game, err
+        
 
     if( home.hasRecord() ):
-        home, away.E, err = parse_order_table(home)
+        if( len(home.pitchers) == 0 ):
+            err = home.name + "沒有先發投手"
+            return game, err
 
-    if( err != "" ):
-        err += " in Home Record"
-        return game, err
-        
-    err = parse_pitcher_info(away, home.pitchers)  
-    if( err != "" ):
-        err += " in Away Record"
-        return game, err
-        
-    err = parse_pitcher_info(home, away.pitchers)  
-    if( err != "" ):
-        err += " in Home Record"
-        return game, err
+        away.E, err = parse_order_table(home)
+
+        if( err != "" ):
+            err += " in Home Record"
+            return game, err
+
+        err = parse_pitcher_info(home, away.pitchers)  
+        if( err != "" ):
+            err += " in Home Record"
+            return game, err
+
         
     # calculate total scores
     away.compute_statistic()
@@ -439,52 +383,67 @@ def make_game(away, home):
 
     return game, err
 
-def seperate_web_string(string_data):
+
+
+
+
+def load_record_file(recordFileName):
+
+    away_scores = []
+    away_table  = []
+    home_scores = []
+    home_table  = []
+    with open(recordFileName) as f:
+        print "Load " + recordFileName
+        for line in f:
+            data = list(line.split())
+            if len(data) != 0:
+                if( data[0].upper() == 'AWAY' ):
+                    away_team_name = data[1]
+                    scores = away_scores
+                    table  = away_table
+                elif( data[0].upper() == 'HOME' ):
+                    home_team_name = data[1]
+                    scores = home_scores
+                    table  = home_table
+                elif( data[0].upper() == 'BOX' ):
+                    for s in data[1:]:
+                        scores.append(int(s))
+                else:
+                    table.append(data)
+
+    return away_team_name, away_scores, away_table, home_team_name, home_scores, home_table
+
+## main calling function
+def parse_game_record(away_team_name, away_scores, away_table, home_team_name, home_scores, home_table):
     
-    str_table = []
-    lines = string_data.split('\n')
-    for line in lines:
-        data = line.split()
-        data = filter(None, data)
-        if len(data) != 0:
-            str_table.append(data)
-    
-    return str_table
-    
-def parse_record_from_web(away_team_name, away_scores, away_record, home_team_name, home_scores, home_record):
-    
-    away_str_table = seperate_web_string(away_record)
-    home_str_table = seperate_web_string(home_record)
-    
-    away = make_team(away_team_name, away_scores, away_str_table)
-    home = make_team(home_team_name, home_scores, home_str_table)
+    away = make_team(away_team_name, away_scores, away_table)
+    home = make_team(home_team_name, home_scores, home_table)
 
     game, err = make_game(away, home)
-
-    '''   
-    game, err = make_game(away_team_name, away_str_table, home_team_name, home_str_table)
     
     if( err != "" ):
         return None, err
 
-    game.away.compute_statistic()
-    game.home.compute_statistic()
-
-    make_web_table(game.away)
-    make_web_table(game.home)
+    if( game.away.hasRecord() ):
+        game.away.compute_statistic()
+        make_web_table(game.away)
+    if( game.home.hasRecord() ):
+        game.home.compute_statistic()
+        make_web_table(game.home)
 
     isColor = True
     post_ptt = make_PTT_format(game, isColor)
-    post_ptt = post_ptt.replace('\x1b', '\025')
+    print post_ptt
+    #post_ptt = post_ptt.replace('\x1b', '\025')
     game.post_ptt = post_ptt
     #post_db  = make_database_format(game)
 
     return game, err
-    '''
-    return 0, 0
-
-def main():
     
+
+if __name__ == "__main__":
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-i" , dest="input_file_name" , required=True, help="Specify input file name")
     parser.add_argument("-o" , dest="output_file_name", help="Specify output file name [default: print to screen]")
@@ -496,9 +455,12 @@ def main():
     outputFileName = opts.output_file_name
     isColor = not opts.no_color
 
-    raw_data = load_data_from_file(recordFileName)
-    game = parse_game_data(raw_data)
+    away_team_name, away_scores, away_record, \
+    home_team_name, home_scores, home_record = load_record_file(recordFileName)
 
+    game, err = parse_game_record(away_team_name, away_scores, away_record, \
+                                  home_team_name, home_scores, home_record)
+    """
     if( game.team2 == None ):
         isOneTeam = True
     else:
@@ -519,7 +481,4 @@ def main():
         with open(outputFileName + '.db', 'w') as f:
             print "Dump %s" %(outputFileName + '.db')
             f.write(post_db)
-    
-
-if __name__ == "__main__":
-    main()
+    """

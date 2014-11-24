@@ -2,10 +2,18 @@
 # -*- coding: utf8 -*-
 import sys
 
+def check_pa_notation(pa):
+
+    err = ""
+    if( pa.result not in ["BB", "SF", "1B", "2B", "3B", "HR", "DP", "K", "CB", "IB", "IF", "FO", "F", "G", "FC", "E"] ):
+        err = "Unknown notation %s (%s)" %(pa.result, pa.raw_str)
+
+    return err
+
 class Game:
     def __init__(self):
-        self.away           = None
         self.home           = None
+        self.away           = None
         self.total_innings  = 0
         self.score_board    = []
 
@@ -20,18 +28,29 @@ class Team:
         self.col2inn        = None
         self.H              = 0
         self.E              = 0
-    
+        self.R              = 0
+        self.nBatters       = 0
+        self.nPitchers      = 0
+        self.batter_table   = []
+        self.pitcher_table  = []
+
     def hasRecord(self):
         return len(self.order_table) != 0
 
     def order(self):
         return len(self.order_table)
 
-    def nBatter(self):
-        return len(self.batters)
+    def num_of_batters(self):
+        self.nBatters = len(self.batters)
+        return self.nBatters
 
-    def Runs(self):
-        return sum(self.scores) 
+    def num_of_pitchers(self):
+        self.nPitchers = len(self.pitchers)
+        return self.nPitchers
+
+    def get_Runs(self):
+        self.R = sum(self.scores) 
+        return self.R
 
     def find_batter(self, number):
         for batter in self.batters:
@@ -39,6 +58,17 @@ class Team:
                 return batter
         # not found
         return None
+    
+    def compute_statistic(self):
+        self.num_of_batters()
+        self.num_of_pitchers()
+        self.get_Runs()
+        for batter in self.batters:
+            batter.compute_statistic()
+
+        for pitcher in self.pitchers:
+            pitcher.compute_statistic()
+
 
 class PA:
     def __init__(self):
@@ -55,8 +85,8 @@ class PA:
         self.raw_str        = ""        # pa code string
         self.change_pitcher = None
 
-class Batter:
-    def __init__(self, order, number='', pos=''):
+class rdBatter:
+    def __init__(self, order="", number="", pos=""):
         self.order  = order
         self.number = number
         self.pos    = pos
@@ -79,6 +109,10 @@ class Batter:
         self.FO     = 0    # foul out 界外飛球出局
 
     def AddPA(self, pa):
+
+        err = check_pa_notation(pa)
+        if( err != "" ):
+            return err
 
         self.PAs.append(pa)
         if( pa.isPlay ):
@@ -113,16 +147,22 @@ class Batter:
             self.RBI += pa.rbi
             self.RUN += pa.run
 
+        return err
 
-    def NumPA(self):
+    def compute_statistic(self):
+        self.num_of_PA()
+
+    def num_of_PA(self):
         n = 0
-        for pa in PAs:
+        for pa in self.PAs:
             if( pa.isPlay ):
                 n += 1
-        return n
 
-class Pitcher:
-    def __init__(self, number='0'):
+        self.PA = n
+        return self.PA
+
+class rdPitcher:
+    def __init__(self, number=""):
         self.number = number
         self.TBF = 0    # total batters faced 面對人次
         self.Out = 0
@@ -132,30 +172,39 @@ class Pitcher:
         self.K   = 0
         self.Run = 0
         self.ER  = 0
+        self.ERA = 0
         self.GO  = 0
         self.FO  = 0
+        self.IP  = ''
 
     def getERA(self):
         if( self.ER == 0 ):
             self.ERA = 0
         else:
-            if( self.IP == 0 ):
+            if( self.Out == 0 ):
                 self.ERA = float("inf")
             else:
                 self.ERA = float(self.ER) / self.Out * (7*3)
         
         return self.ERA
 
-    def IP(self):
+    def calculate_IP(self):
         if( self.Out == 0 ):
-            return '0.0'
+            self.IP = '0.0'
         else:
             N = int(self.Out / 3)
             m = self.Out % 3
-            return '%d.%d' %(N, m)
+            self.IP = '%d.%d' %(N, m)
+
+        return self.IP
             
 
     def AddPa(self, pa, isER=True):
+
+        err = check_pa_notation(pa)
+        if( err != "" ):
+            return err
+
         if( pa.isPlay ):
             self.TBF += 1
             if( pa.result in ("1B", "2B", "3B", "HR") ):
@@ -180,4 +229,9 @@ class Pitcher:
             self.Run += pa.run
             if (isER and pa.result != "E"):
                 self.ER += pa.run
-    
+        
+        return err
+
+    def compute_statistic(self):
+        self.calculate_IP()
+        self.getERA()
