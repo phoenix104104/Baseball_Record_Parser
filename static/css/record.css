@@ -78,3 +78,7 @@ table th, td{
     font-weight: bold;
     font-size: 20px;
 }
+
+.warning{
+    color: red;
+}

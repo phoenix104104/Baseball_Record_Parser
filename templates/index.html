@@ -29,7 +29,7 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="http://google.com">author</a></li>
+                    <li><a href="https://github.com/phoenix104104/Baseball_Record_Parser">Github</a></li>
                 </ul>
             </div>
         </div>
@@ -46,19 +46,19 @@
     					<tbody>
     						<tr>
     							<th>聯賽</th>
-    							<th><input type="text" name="game_type" value="{{game_type}}"></th>
+    							<th><input type="text" name="game_type" value="{{game.game_type}}"></th>
     						</tr>
     						<tr>
     							<th>日期</th>
-    							<th><input type="date" name="date" value="{{date}}"></th>
+    							<th><input type="date" name="date" value="{{game.date}}"></th>
     						</tr>
     						<tr>
     							<th>地點</th>
-    							<th><input type="text" name="location" value="{{location}}"></th>
+    							<th><input type="text" name="location" value="{{game.location}}"></th>
     						</tr>
     						<tr>
     							<th>場次</th>
-    							<th><input type="number" name="game_id" value="{{game_id}}"><br></th>
+    							<th><input type="number" name="game_id" value="{{game.game_id}}"><br></th>
     						</tr>
     					</tbody>
     				</table>
@@ -66,7 +66,7 @@
     		</div>
     
     
-    		<div class="row table-title warning">
+    		<div class="row title warning">
     			{{warning}}
     		</div>
     
@@ -90,14 +90,10 @@
     	    			</thead>
     		   			<tbody>
     		    			<tr>
-    			    			<th><input type="text" size="6" name="away_team_name" value="{{away_team_name}}"></th>
-    				    		<th><input type="text" size="1" name="away_score_1" value="{{away_score_1}}"</th>
-    					    	<th><input type="text" size="1" name="away_score_2" value="{{away_score_2}}"</th>
-    						    <th><input type="text" size="1" name="away_score_3" value="{{away_score_3}}"</th>
-        						<th><input type="text" size="1" name="away_score_4" value="{{away_score_4}}"</th>
-    	    					<th><input type="text" size="1" name="away_score_5" value="{{away_score_5}}"</th>
-    		   					<th><input type="text" size="1" name="away_score_6" value="{{away_score_6}}"</th>
-    		    				<th><input type="text" size="1" name="away_score_7" value="{{away_score_7}}"</th>
+    			    			<th><input type="text" size="6" name="away_team_name" value="{{game.away.name}}"></th>
+                                {% for score in game.away.scores %}
+    				    		<th><input type="text" size="1" name="away_score_{{loop.index}}" value="{{score}}"</th>
+                                {% endfor %}
     			    		</tr>
     				    </tbody>
         			</table>
@@ -126,13 +122,9 @@
     				    <tbody>
         					<tr>
         						<th><input type="text" size="6" name="home_team_name" value="{{home_team_name}}"></th>
-    	    					<th><input type="text" size="1" name="home_score_1" value="{{home_score_1}}"</th>
-    		   					<th><input type="text" size="1" name="home_score_2" value="{{home_score_2}}"</th>
-    		    				<th><input type="text" size="1" name="home_score_3" value="{{home_score_3}}"</th>
-    			    			<th><input type="text" size="1" name="home_score_4" value="{{home_score_4}}"</th>
-    				    		<th><input type="text" size="1" name="home_score_5" value="{{home_score_5}}"</th>
-    					    	<th><input type="text" size="1" name="home_score_6" value="{{home_score_6}}"</th>
-    						    <th><input type="text" size="1" name="home_score_7" value="{{home_score_7}}"</th>
+                                {% for score in game.home.scores %}
+    				    		<th><input type="text" size="1" name="home_score_{{loop.index}}" value="{{score}}"</th>
+                                {% endfor %}
         				</tbody>
     	    		</table>
     

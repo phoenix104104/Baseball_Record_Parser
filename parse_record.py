@@ -296,7 +296,8 @@ def parse_order_table(team):
 
 
 def make_team(team_name, scores, str_table):
-
+    
+    err = ""
     team = Team()
     team.name = team_name
 
@@ -310,6 +311,9 @@ def make_team(team_name, scores, str_table):
     for r in range(len(str_table)):
 
         row = str_table[r]
+        if( len(row) < 3 ):
+            err = "format error(row %d): name position PA PA..." %(r+1)
+            break
 
         order = str(r+1)
         no    = row[0]
@@ -321,14 +325,15 @@ def make_team(team_name, scores, str_table):
         if( pos == 'P' ):
             team.pitchers.append( rdPitcher(no) )
 
-    return team
+    return team, err
 
 
 
-def make_game(away, home):
+def make_game(game):
 
-    game = Game()
     err = ""
+    away = game.away
+    home = game.home
 
     if( not away.hasRecord() and not home.hasRecord() ):
         err = "Both record not exist"
@@ -343,7 +348,7 @@ def make_game(away, home):
 
     if( away.hasRecord() ):
         if( len(away.pitchers) == 0 ):
-            err = away.name + "沒有先發投手"
+            err = away.name + u"沒有先發投手"
             return game, err
 
         home.E, err = parse_order_table(away)
@@ -359,7 +364,7 @@ def make_game(away, home):
 
     if( home.hasRecord() ):
         if( len(home.pitchers) == 0 ):
-            err = home.name + "沒有先發投手"
+            err = home.name + u"沒有先發投手"
             return game, err
 
         away.E, err = parse_order_table(home)
@@ -417,13 +422,23 @@ def load_record_file(recordFileName):
 ## main calling function
 def parse_game_record(away_team_name, away_scores, away_table, home_team_name, home_scores, home_table):
     
-    away = make_team(away_team_name, away_scores, away_table)
-    home = make_team(home_team_name, home_scores, home_table)
+    err = ""
+    game = Game()
+     
+    game.away, err = make_team(away_team_name, away_scores, away_table)
+    if( err != "" ):
+        err += " in Away record"
+        return game, err
 
-    game, err = make_game(away, home)
+    game.home , err = make_team(home_team_name, home_scores, home_table)
+    if( err != "" ):
+        err += " in Home record"
+        return game, err
+
+    game, err = make_game(game)
     
     if( err != "" ):
-        return None, err
+        return game, err
 
     if( game.away.hasRecord() ):
         game.away.compute_statistic()
@@ -433,10 +448,9 @@ def parse_game_record(away_team_name, away_scores, away_table, home_team_name, h
         make_web_table(game.home)
 
     isColor = True
-    post_ptt = make_PTT_format(game, isColor)
-    print post_ptt
+    #post_ptt = make_PTT_format(game, isColor)
     #post_ptt = post_ptt.replace('\x1b', '\025')
-    game.post_ptt = post_ptt
+    #game.post_ptt = post_ptt
     #post_db  = make_database_format(game)
 
     return game, err

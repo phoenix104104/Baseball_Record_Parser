@@ -12,10 +12,12 @@ def check_pa_notation(pa):
 
 class Game:
     def __init__(self):
-        self.home           = None
-        self.away           = None
-        self.total_innings  = 0
-        self.score_board    = []
+        self.home       = Team()
+        self.away       = Team()
+        self.game_id    = None
+        self.date       = None
+        self.location   = ""
+        self.game_type  = ""    
 
 class Team:
     def __init__(self):
@@ -24,7 +26,7 @@ class Team:
         self.pitchers       = []
         self.orders         = []
         self.order_table    = []
-        self.scores         = []
+        self.scores         = [0]*7
         self.col2inn        = None
         self.H              = 0
         self.E              = 0
