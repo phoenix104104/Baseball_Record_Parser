@@ -4,8 +4,8 @@ import sys
 
 class Game:
     def __init__(self):
-        self.team1          = None
-        self.team2          = None
+        self.away           = None
+        self.home           = None
         self.total_innings  = 0
         self.score_board    = []
 
@@ -20,6 +20,9 @@ class Team:
         self.col2inn        = None
         self.H              = 0
         self.E              = 0
+    
+    def hasRecord(self):
+        return len(self.order_table) != 0
 
     def order(self):
         return len(self.order_table)

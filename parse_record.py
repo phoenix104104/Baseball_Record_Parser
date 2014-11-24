@@ -262,7 +262,7 @@ def print_batter(batters):
         sys.stdout.write('\n')
 
 
-def parse_order_table(team, team_opp=None):
+def parse_order_table(team):
         
     # parse inning information
     inning   = 1
@@ -276,19 +276,24 @@ def parse_order_table(team, team_opp=None):
         curr_order.append(batter)
     
     team_H = 0
-    team_E = 0
+    opp_E = 0
     while(True):
-        pa = parse_PA(team, team.order_table, order, turn, inning, curr_order)
+        pa, err = parse_PA(team, team.order_table, order, turn, inning, curr_order)
+        if( err != "" ):
+            err += " - row %d" %(order+1)
+            break
+        
         score += pa.run
 
         if( pa.result in ("1B", "2B", "3B", "HR") ):
             team_H += 1
 
         if( pa.result == "E" ):
-            team_E += 1
+            opp_E += 1
 
         if( pa.endInning in ('#', '!') ):  # change inning
-            team.scores.append(score)
+            team.scores[inning] = score
+            inning += 1
             score = 0
 
         if( pa.endInning == '!' ):
@@ -300,15 +305,13 @@ def parse_order_table(team, team_opp=None):
             turn += 1
     
     team.H  = team_H
-    if( team_opp != None ):
-        team_opp.E  = team_E
 
     # append 0 to team score board until 7th inning
     score_inn = len(team.scores)
     for i in range(7-score_inn):
         team.scores.append(0)
     
-    return team
+    return opp_E, err
 
 def load_data_from_file(fileName):
 
@@ -338,6 +341,12 @@ def make_team(team_name, scores, str_table):
 
     team = Team()
     team.name = team_name
+
+    if( scores == None ):
+        scores = [0] * 7
+    if( len(scores) < 7 ):
+        scores = scores + [0] * (7 - len(scores))
+
     team.scores = scores
 
     for r in range(len(str_table)):
@@ -377,13 +386,14 @@ def parse_game_data(game_data):
     return game
 
 
-def make_game(away_team_name, away_str_table, home_team_name, home_str_table):
+def make_game(away, home):
 
     game = Game()
     err = ""
 
-    away = make_team(away_team_name, away_str_table)
-    home = make_team(home_team_name, home_str_table)
+    if( not away.hasRecord() and not home.hasRecord() ):
+        err = "Both record not exist"
+        return game, err
 
     if( len(away.pitchers) == 0 ):
         err = away.name + "沒有先發投手"
@@ -392,13 +402,17 @@ def make_game(away_team_name, away_str_table, home_team_name, home_str_table):
     if( len(home.pitchers) == 0 ):
         err = home.name + "沒有先發投手"
         return game, err
+    
+    if( away.hasRecord() ):
+        away, home.E, err = parse_order_table(away)
 
-    away, home.E, err = parse_order_table(away)
     if( err != "" ):
         err += " in Away Record"
         return game, err
 
-    home, away.E, err = parse_order_table(home)
+    if( home.hasRecord() ):
+        home, away.E, err = parse_order_table(home)
+
     if( err != "" ):
         err += " in Home Record"
         return game, err
@@ -442,11 +456,7 @@ def parse_record_from_web(away_team_name, away_scores, away_record, home_team_na
     away = make_team(away_team_name, away_scores, away_str_table)
     home = make_team(home_team_name, home_scores, home_str_table)
 
-    if( len(away.order_table) == 0 && len(home.order_table) == 0 ):
-        err = "沒有記錄"
-        game = None
-    elif( len(away.order_table) == 0 && len(home.order_table) != 0 ):
-        game, err = make_game_single_team() /////////TODO
+    game, err = make_game(away, home)
 
     '''   
     game, err = make_game(away_team_name, away_str_table, home_team_name, home_str_table)
