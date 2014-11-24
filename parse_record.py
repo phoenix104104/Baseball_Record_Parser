@@ -17,7 +17,8 @@ def check_least_out(pa):
     return out
 
 def parse_base(pa, str):
-
+    
+    err = ""
     n = len(str)
     rbi   = 0
     run   = 0
@@ -36,15 +37,15 @@ def parse_base(pa, str):
         elif( (s == '*') | (s == '?') ):
             note = s
         else:
-            sys.exit("Parse Error! Unknown base notation %s (%s)" %(s, pa.raw_str) )
-
+            err = "Unknown base notation %s (%s)" %(s, pa.raw_str)
+            break
 
     pa.rbi = rbi
     pa.run = run
     pa.out = out
     pa.endInning = isEnd
     pa.note = note
-    return pa
+    return pa, err
 
 def change_pitcher(pa_strs):
     if( pa_strs[0][0] == 'P' ):
@@ -59,9 +60,10 @@ def change_batter(pa_strs):
         return False
         
 
-def parse_PA(team, order_table, order, turn, inning, curr_order):
+def parse_PA(team, order, turn, inning, curr_order):
     
-    pa_str = order_table[order][turn].upper()
+    err = ""
+    pa_str = team.order_table[order][turn].upper()
     s = pa_str.split('/')
     
     pa = PA()
@@ -105,24 +107,26 @@ def parse_PA(team, order_table, order, turn, inning, curr_order):
 
             else:               # res-end
                 pa.result = s[0]
-                pa = parse_base(pa, s[1])
+                pa, err = parse_base(pa, s[1])
 
         elif( len(s) == 3 ):    # pos-res-end
             pa.pos    = s[0]
             pa.result = s[1]
-            pa = parse_base(pa, s[2])
+            pa, err = parse_base(pa, s[2])
 
         else:
-           sys.exit("Parse Error! Wrong PA input %s\n" %pa.raw_str)
+           err = "Incorrect PA format %s\n" %pa.raw_str
+           return pa, err
+
 
 
     least_out = check_least_out(pa)
     if( pa.out < least_out ):
         pa.out = least_out
 
-    batter.AddPA(pa)
+    err = batter.AddPA(pa)
     order_table[order][turn] = [batter, pa]
-    return pa
+    return pa, err
 
 
 def parse_teams(game_data):
@@ -193,7 +197,8 @@ def parse_column(team):
 
 
 def parse_pitcher_info(team, pitchers):
-
+    
+    err = ""
     # parse inning information
     turn     = 0
     order    = 0
@@ -223,8 +228,10 @@ def parse_pitcher_info(team, pitchers):
                 pitcher = Pitcher(no)
                 pitchers.append( pitcher )
 
-        pitcher.AddPa(pa, isER)
-        
+        err = pitcher.AddPa(pa, isER)
+        if( err != "" ):
+            break
+
         if( pa.endInning == '!'): # end of game
             break
 
@@ -244,7 +251,7 @@ def parse_pitcher_info(team, pitchers):
             order = 0
             turn += 1
     
-
+    return err
 
 def print_order_table(table):
     for row in table:
@@ -263,15 +270,16 @@ def print_batter(batters):
 
 
 def parse_order_table(team):
-        
+    
+    err = ""
     # parse inning information
-    inning   = 1
-    turn     = 0
-    order    = 0
-    out      = 0
-    score    = 0    # score per inning
-    nOrder = len(team.batters)
-    curr_order = []
+    inning      = 1
+    turn        = 0
+    order       = 0
+    out         = 0
+    score       = 0    # score per inning
+    nOrder      = len(team.batters)
+    curr_order  = []
     for batter in team.batters:
         curr_order.append(batter)
     
@@ -306,11 +314,6 @@ def parse_order_table(team):
     
     team.H  = team_H
 
-    # append 0 to team score board until 7th inning
-    score_inn = len(team.scores)
-    for i in range(7-score_inn):
-        team.scores.append(0)
-    
     return opp_E, err
 
 def load_data_from_file(fileName):
