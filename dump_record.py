@@ -80,8 +80,10 @@ def make_batter_table(team):
     table = []
 
     # --- inning title
-    row = [""] * 11
     offset = 2
+    max_width = offset + len(col2inn)
+    row = [""] * max_width
+
     row[offset] = (digit2FullWidth(1) + "局")
     for n in range(1, len(col2inn)):
         if( col2inn[n] != col2inn[n-1] ):
@@ -90,7 +92,7 @@ def make_batter_table(team):
     table.append(row)
 
     for n in range(len(player)):
-        row = [""] * 13
+        row = [""] * max_width
         
         if( player[n].order == 'R' ):
             order = "代"

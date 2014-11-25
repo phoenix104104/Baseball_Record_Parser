@@ -22,11 +22,12 @@
 <body>
     
 <!--  header  -->    
-    <div class="container">
-        <div class="navbar navbar-default" role="navigation">
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
             <div class="navbar-header">
                 <div class="navbar-brand">Baseball Record Parser</div>
             </div>
+
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="https://github.com/phoenix104104/Baseball_Record_Parser">Github</a></li>
@@ -40,30 +41,36 @@
 
         <form action='/' method="POST">
 
-    		<div class="row">
-    			<div class="col-md-4 col-md-offset-4">	
-    				<table class="table table-condensed table-bordered table-hover">
-    					<tbody>
-    						<tr>
-    							<th>聯賽</th>
-    							<th><input type="text" name="game_type" value="{{game.game_type}}"></th>
-    						</tr>
-    						<tr>
-    							<th>日期</th>
-    							<th><input type="date" name="date" value="{{game.date}}"></th>
-    						</tr>
-    						<tr>
-    							<th>地點</th>
-    							<th><input type="text" name="location" value="{{game.location}}"></th>
-    						</tr>
-    						<tr>
-    							<th>場次</th>
-    							<th><input type="number" name="game_id" value="{{game.game_id}}"><br></th>
-    						</tr>
-    					</tbody>
-    				</table>
+    		<div class="row row-center">
+    			<div class="col-xs-3 col-center">	
+    				<div class="form-horizontal">
+                        <div class="form-group">
+    						<label class="col-sm-3 control-label">聯賽</label>
+    						<div class="col-sm-9">
+                                <input type="text" class='form-control' name="game_type" value="{{game.game_type}}">
+                            </div>
+    					</div>
+    					<div class="form-group">
+    						<label class="col-sm-3 control-label">日期</label>
+    						<div class="col-sm-9">
+                                <input type="date" class="form-control" name="date" value="{{game.date}}">
+                            </div>
+    					</div>
+    					<div class="form-group">
+    						<label class="col-sm-3 control-label">地點</label>
+    						<div class="col-sm-9">
+                                <input type="text" class="form-control" name="location" size="2" class="form-control" value="{{game.location}}">
+                            </div>
+    					</div>
+    					<div class="form-group">
+   							<label class="col-sm-3 control-label">場次</label>
+    						<div class="col-sm-9">
+                                <input type="number" class="form-control" name="game_id" value="{{game.game_id}}"><br>
+                            </div>
+    					</div>
+    				</div>
     			</div>	
-    		</div>
+            </div>
     
     
     		<div class="row title warning">
@@ -90,15 +97,15 @@
     	    			</thead>
     		   			<tbody>
     		    			<tr>
-    			    			<th><input type="text" size="6" name="away_team_name" value="{{game.away.name}}"></th>
+    			    			<th><input type="text" class="form-control" size="6" name="away_team_name" value="{{game.away.name}}"></th>
                                 {% for score in game.away.scores %}
-    				    		<th><input type="text" size="1" name="away_score_{{loop.index}}" value="{{score}}"</th>
+    				    		<th><input type="text" class="form-control" size="1" name="away_score_{{loop.index}}" value="{{score}}"</th>
                                 {% endfor %}
     			    		</tr>
     				    </tbody>
         			</table>
     
-                    <textarea class="record_table lined" name="away_record" rows="12">{{away_record}}</textarea>
+                    <textarea class="record_table lined" name="away_record" rows="11">{{away_record}}</textarea>
                 </div>
     
     
@@ -121,21 +128,21 @@
     			    	</thead>
     				    <tbody>
         					<tr>
-        						<th><input type="text" size="6" name="home_team_name" value="{{home_team_name}}"></th>
+        						<th><input type="text" class="form-control" size="6" name="home_team_name" value="{{game.home.name}}"></th>
                                 {% for score in game.home.scores %}
-    				    		<th><input type="text" size="1" name="home_score_{{loop.index}}" value="{{score}}"</th>
+    				    		<th><input type="text" class="form-control" size="1" name="home_score_{{loop.index}}" value="{{score}}"</th>
                                 {% endfor %}
         				</tbody>
     	    		</table>
     
-                    <textarea class="record_table lined" name="home_record" rows="12">{{home_record}}</textarea>
+                    <textarea class="record_table lined" name="home_record" rows="11">{{home_record}}</textarea>
                 </div>
              </div>
     
              <br>
     
              <div class="row">
-                <div class="center-block">
+                <div class="row-center">
                     <input type="submit" class="btn btn-primary" name="preview" value="預覽">
     				<input type="submit" class="btn btn-success" name="download" value="下載">
                 </div>
@@ -188,7 +195,7 @@
         </div>
         <div class="row">
             <div class="col-md-6">
-                <table class="table table-condensed">
+                <table class="table table-condensed table-bordered">
                     {% for row in game.away.batter_table %}
                     <tr>
                         {% for col in row %}
@@ -199,7 +206,7 @@
                 </table>
             </div>
             <div class="col-md-6">
-                <table class="table table-condensed">
+                <table class="table table-condensed table-bordered">
                     {% for row in game.home.batter_table %}
                     <tr>
                         {% for col in row %}
@@ -212,7 +219,7 @@
         </div>
         <div class="row">
             <div class="col-md-6">
-                <table class="table table-condensed">
+                <table class="table table-condensed table-bordered">
                     {% for row in game.away.pitcher_table %}
                     <tr>
                         {% for col in row %}
@@ -223,7 +230,7 @@
                 </table>
             </div>
             <div class="col-md-6">
-                <table class="table table-condensed">
+                <table class="table table-condensed table-bordered">
                     {% for row in game.home.pitcher_table %}
                     <tr>
                         {% for col in row %}

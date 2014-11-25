@@ -36,17 +36,13 @@ def gather_team_info(request, HA, record_str):
 @app.route('/', methods=["GET","POST"])
 def index():
     
-    game = Game()
-    away_record = ""
-    home_record = ""    
-    err = ""
     if( request.method == "POST" ):
 
         game_type   = request.form["game_type"].encode('utf8')
         date        = request.form["date"]
         location    = request.form["location"].encode('utf8')
-        game_id     = request.form["game_id"].encode('utf8')
-        game_id = str(date).replace("-", "") + str(game_id)
+        id          = request.form["game_id"].encode('utf8')
+        game_id     = str(date).replace("-", "") + str(id)
         away_record = request.form["away_record"]
         home_record = request.form["home_record"]
     
@@ -62,7 +58,7 @@ def index():
         game.game_id    = game_id
    
     if( 'preview' in request.form and err == "" ) :
-        return render_template("index.html", game=game, away_record=away_record, home_record=home_record, warning=err, preview=True)
+        return render_template("index.html", game=game, id=id, away_record=away_record, home_record=home_record, warning=err, preview=True)
     
     if( 'download' in request.form and err == "" ):
         
@@ -80,7 +76,7 @@ def index():
             response.headers['Content-Length'] = os.path.getsize(filepath)
             return response
 
-    return render_template("index.html", game=game, away_record=away_record, home_record=home_record, warning=err)
+    return render_template("index.html", game=Game(), id='', away_record='', home_record='', warning='')
 
 
 
