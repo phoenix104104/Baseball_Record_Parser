@@ -22,7 +22,7 @@ $(document).ready(function() {
     });
 
     $(".lined").linedtextarea({
-        selectedClass: 'lineselect'
+        selectedClass: 'lineselect',
     });
     
 });
