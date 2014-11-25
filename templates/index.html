@@ -142,7 +142,102 @@
             </div>
 
         </form>
+
+        {% if preview %}
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <table class="table table-condensed table-bordered fixed-width">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                            <th>4</th>
+                            <th>5</th>
+                            <th>6</th>
+                            <th>7</th>
+                            <th>R</th>
+                            <th>H</th>
+                            <th>E</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>{{game.away.name}}</th>
+                            {% for score in game.away.scores %}
+                                <th>{{score}}</th>
+                            {% endfor %}
+                            <th>{{game.away.R}}</th>
+                            <th>{{game.away.H}}</th>
+                            <th>{{game.away.E}}</th>
+                        </tr>
+                        <tr>
+                            <th>{{game.home.name}}</th>
+                            {% for score in game.home.scores %}
+                                <th>{{score}}</th>
+                            {% endfor %}
+                            <th>{{game.home.R}}</th>
+                            <th>{{game.home.H}}</th>
+                            <th>{{game.home.E}}</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-condensed">
+                    {% for row in game.away.batter_table %}
+                    <tr>
+                        {% for col in row %}
+                            <td>{{col}}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-condensed">
+                    {% for row in game.home.batter_table %}
+                    <tr>
+                        {% for col in row %}
+                            <td>{{col}}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-condensed">
+                    {% for row in game.away.pitcher_table %}
+                    <tr>
+                        {% for col in row %}
+                            <td>{{col}}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-condensed">
+                    {% for row in game.home.pitcher_table %}
+                    <tr>
+                        {% for col in row %}
+                            <td>{{col}}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
     </div>
+
+
 
 </body>
 </html>
