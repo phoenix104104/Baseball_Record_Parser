@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
-import sys
+import sys, os
 
 def check_pa_notation(pa):
 
@@ -19,6 +19,38 @@ class Game:
         self.location   = ""
         self.game_type  = ""    
 
+    def save_game(self, filepath):
+        dir_name = os.path.dirname(filepath)
+        if( not os.path.isdir(dir_name) ):
+                os.mkdir(dir_name)
+
+        with open(filepath, 'w') as f:
+            output = ""
+            output += "type\t%s\n" %self.game_type
+            output += "date\t%s\n" %str(self.date)
+            output += "gameid\t%s\n" %self.game_id
+            output += "location\t%s\n" %self.location
+            
+            output += "Away\t%s\n"  %self.away.name
+            output += "Box"
+            for score in self.away.scores:
+                output += "\t%d" %score
+            output += "\n"
+            output += "%s\n" %self.away.raw_record.replace('\r', '')
+            
+            output += '\n'
+
+            output += "Home\t%s\n" %self.home.name
+            output += "Box"
+            for score in self.home.scores:
+                output += "\t%d" %score
+            output += "\n"
+            output += "%s\n" %self.home.raw_record.replace('\r', '')
+            
+            f.write(output)
+
+        print "Save %s" %filepath
+
 class Team:
     def __init__(self):
         self.name = ""
@@ -35,6 +67,7 @@ class Team:
         self.nPitchers      = 0
         self.batter_table   = []
         self.pitcher_table  = []
+        self.raw_record     = ""
 
     def hasRecord(self):
         return len(self.order_table) != 0

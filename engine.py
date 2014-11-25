@@ -56,14 +56,22 @@ def index():
         game.date       = date
         game.location   = location
         game.game_id    = game_id
-   
+        game.away.raw_record = away_record.encode('utf8')
+        game.home.raw_record = home_record.encode('utf8')
+         
     if( 'preview' in request.form and err == "" ) :
         return render_template("index.html", game=game, id=id, away_record=away_record, home_record=home_record, warning=err, preview=True)
     
     if( 'download' in request.form and err == "" ):
         
+        filepath = 'rd/%s.rd' %game.game_id
+        game.save_game(filepath)
+         
         filename = '%s.txt' %game.game_id
         filepath = 'rd/%s' %filename
+        
+        if( not os.path.isdir('rd') ):
+            os.mkdir('rd')
 
         with open(filepath, 'w') as f:
             f.write(game.post_ptt)
@@ -86,5 +94,5 @@ if __name__ == "__main__":
     reload(sys)
     sys.setdefaultencoding('utf8')
     app.debug = True
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=80)
 

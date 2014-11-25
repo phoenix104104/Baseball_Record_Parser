@@ -2,6 +2,8 @@
 # -*- coding: utf8 -*-
 import sys, os
 
+def exist_cjk(string):
+    return any( 0x4e00 <= ord(x) <= 0x9fff for x in string)
 
 def make_PTT_format(game, isAddColor=True):
     
@@ -55,9 +57,7 @@ def make_PTT_score_board(game):
     posts  = "      %s１%s２%s３%s４%s５%s６%s７%s　%sＲ%sＨ%sＥ\n" %(vv, vv, vv, vv, vv, vv, vv, vv, vv, vv, vv)
     for team in [game.away, game.home]:
         posts += "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n" %(hh, hh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh)
-
-        posts += "%s" %team.name        
-
+        
         posts += " %s %s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s　%s%2d%s%2d%s%2d\n" %(team.name, vv, team.scores[0], vv, team.scores[1], vv, team.scores[2], vv, team.scores[3], vv, team.scores[4], vv, team.scores[5], vv, team.scores[6], vv, vv, team.R, vv, team.H, vv, team.E)
     
     return posts

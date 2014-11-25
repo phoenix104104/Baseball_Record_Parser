@@ -276,7 +276,7 @@ def parse_order_table(team):
             opp_E += 1
 
         if( pa.endInning in ('#', '!') ):  # change inning
-            team.scores[inning] = score
+            team.scores[inning-1] = score
             inning += 1
             score = 0
 
