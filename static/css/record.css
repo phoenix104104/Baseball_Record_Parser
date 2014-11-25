@@ -86,3 +86,14 @@ table th, td{
 .warning{
     color: red;
 }
+
+.table-fix-width{
+    table-layout: fixed !important;
+}
+
+.preview{
+    padding: 10px;
+    border-style: double;
+    border-width: 3px;
+}
+

@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta name="author" content="phoenix04104">
 	
-    <title>Baseball Record</title>
+    <title>Softball Record Parser</title>
     
     <link rel="shortcut icon" href="/static/image/bat.jpg">
 
@@ -25,7 +25,7 @@
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container">
             <div class="navbar-header">
-                <div class="navbar-brand">Baseball Record Parser</div>
+                <div class="navbar-brand">Softball Record Parser</div>
             </div>
 
             <div class="navbar-collapse collapse">
@@ -82,7 +82,7 @@
                     <div class="title">
                         AWAY
                     </div>
-            	    <table class="table table-condensed table-bordered table-hover">
+            	    <table class="table table-condensed table-bordered">
     				    <thead>
     					    <tr>
     						    <th>隊伍</th>
@@ -113,7 +113,7 @@
                     <div class="title">
                         HOME
                     </div>
-        			<table class="table table-condensed table-bordered table-hover">
+        			<table class="table table-condensed table-bordered">
     	    			<thead>
     		   				<tr>
     		    				<th>隊伍</th>
@@ -137,11 +137,28 @@
     
                     <textarea class="record_table lined" name="home_record" rows="11">{{home_record}}</textarea>
                 </div>
-             </div>
+            </div>
     
-             <br>
-    
-             <div class="row">
+            <br>
+            <div class="panel-group" role="tablist">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="collapseListGroupHeading1">
+                        <h4 class="panel-title">
+                            <a class="collapsed" data-toggle="collapse" href="#collapseListGroup1" aria-expanded="false" aria-controls="collapseListGroup1">
+                                instruction
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseListGroup1" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingListGroupHeading1">
+                        <ul class="list-group">
+                            <li class="list-group-item">blabla</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <br>     
+
+            <div class="row">
                 <div class="row-center">
                     <input type="submit" class="btn btn-primary" name="preview" value="預覽">
     				<input type="submit" class="btn btn-success" name="download" value="下載">
@@ -151,10 +168,12 @@
         </form>
         
         <br>
+        <br>
         {% if preview %}
+        <div class="preview">
         <div class="row">
             <div class="col-md-6 col-md-offset-3">
-                <table class="table table-condensed table-bordered fixed-width">
+                <table class="table table-condensed table-bordered table-fixed-width table-hover">
                     <thead>
                         <tr>
                             <th></th>
@@ -172,22 +191,22 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <th>{{game.away.name}}</th>
+                            <td>{{game.away.name}}</td>
                             {% for score in game.away.scores %}
-                                <th>{{score}}</th>
+                                <td>{{score}}</td>
                             {% endfor %}
-                            <th>{{game.away.R}}</th>
-                            <th>{{game.away.H}}</th>
-                            <th>{{game.away.E}}</th>
+                            <td>{{game.away.R}}</td>
+                            <td>{{game.away.H}}</td>
+                            <td>{{game.away.E}}</td>
                         </tr>
                         <tr>
-                            <th>{{game.home.name}}</th>
+                            <td>{{game.home.name}}</td>
                             {% for score in game.home.scores %}
-                                <th>{{score}}</th>
+                                <td>{{score}}</td>
                             {% endfor %}
-                            <th>{{game.home.R}}</th>
-                            <th>{{game.home.H}}</th>
-                            <th>{{game.home.E}}</th>
+                            <td>{{game.home.R}}</td>
+                            <td>{{game.home.H}}</td>
+                            <td>{{game.home.E}}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -195,7 +214,7 @@
         </div>
         <div class="row">
             <div class="col-md-6">
-                <table class="table table-condensed table-bordered">
+                <table class="table table-condensed table-bordered table-hover">
                     {% for row in game.away.batter_table %}
                     <tr>
                         {% for col in row %}
@@ -206,7 +225,7 @@
                 </table>
             </div>
             <div class="col-md-6">
-                <table class="table table-condensed table-bordered">
+                <table class="table table-condensed table-bordered table-hover">
                     {% for row in game.home.batter_table %}
                     <tr>
                         {% for col in row %}
@@ -219,7 +238,7 @@
         </div>
         <div class="row">
             <div class="col-md-6">
-                <table class="table table-condensed table-bordered">
+                <table class="table table-condensed table-bordered table-hover">
                     {% for row in game.away.pitcher_table %}
                     <tr>
                         {% for col in row %}
@@ -230,7 +249,7 @@
                 </table>
             </div>
             <div class="col-md-6">
-                <table class="table table-condensed table-bordered">
+                <table class="table table-condensed table-bordered table-hover">
                     {% for row in game.home.pitcher_table %}
                     <tr>
                         {% for col in row %}
@@ -244,7 +263,7 @@
         {% endif %}
 
     </div>
-
+    </div>
 
 
 </body>
