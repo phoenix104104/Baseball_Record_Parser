@@ -17,20 +17,19 @@ Format of input file:
 -----------
 (以下所有代號皆不分大小寫)
 
-text file input format:
 ```
 type    聯賽名稱
 date    yyyy-mm-dd
 id      yyyymmdd1
 location    比賽場地
 
-HOME    隊名
+AWAY    隊名
 Box     0   1   2   3   4   5
 姓名/背號  守位  PA  PA  PA
 姓名/背號  守位  PA  PA  PA
 ...
 
-AWAY    隊名
+HOME    隊名
 Box     0   1   2   3   4   5
 姓名/背號  守位  PA  PA  PA
 姓名/背號  守位  PA  PA  PA
