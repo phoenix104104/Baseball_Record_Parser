@@ -16,6 +16,7 @@ optional:
 Format of input file: 
 -----------
 (以下所有代號皆不分大小寫)
+
 text file input format:
 ```
 type    聯賽名稱
