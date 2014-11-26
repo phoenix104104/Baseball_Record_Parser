@@ -90,29 +90,29 @@ location    萬壽橋
 
 AWAY    化研
 Box     4   10  0   4   9
-n   1B  R/1B-r   8-2B-r   8-F-x       8-2B-r  8-2B-2r
-7   2B  8/1B-r   9-3B-2r  6-1B-1      5-E-r   BB-r
-23  3B  L-1B-1r  7-2B-1r  8-1B-1x*#   7-2B-2r HR-4r
-6   P   7-2B-2   7-HR-2r  6-G-x       7-2B-2  7-2B-r
-26  C   6-F-xx*  7-2B-r   r31-6-1B    K-x     rOB-8-1b-1r
-24  LF  5-E-r    6-1B-r   7-2B        6-G-x#  8-E-r
-17  RF  7-1B-1   8-HR-3r  K-x         8-1B-r  6-1B
-21  CF  7-2B-x#* 7-1B-r   6-F-x#      6-1B-r  1-1B-1
-25  SS  8-1B     6-E-r    8-1B-r      5-F-x   6-DP-xx!
-3   FF  5-FC-xr  6-1B     rob-k-x     1-1b-r
+n   1B  R/1B/r   8/2B/r   8/F         8/2B/r  8/2B/2r
+7   2B  8/1B/r   9/3B/2r  6/1B/1      5/E/r   BB/r
+23  3B  L/1B/1r  7/2B/1r  8/1B/1x*#   7/2B/2r HR/4r
+6   P   7/2B/2   7/HR/2r  6/G         7/2B/2  7/2B/r
+26  C   6/F/x*   7/2B/r   r31/6/1B    K       rOB/8/1b/1r
+24  LF  5/E/r    6/1B/r   7/2B        6/G/#   8/E/r
+17  RF  7/1B/1   8/HR/3r  K           8/1B/r  6/1B
+21  CF  7/2B/x#* 7/1B/r   6/F/#       6/1B/r  1/1B/1
+25  SS  8/1B     6/E/r    8/1B/r      5/F     6/DP/!
+3   FF  5/FC/xr  6/1B     rob/k       1/1b/r
 
 HOME    資工
 Box     0   1   0   0   2
-74  1B  BB      6-F-x   7-F-x
-36  2B  DP-xx   8-F-x   BB-r
-7   3B  1-F-x#  9-3B    8-2B-r
-71  SS  6-E-r   1-G-x#  8-2B-2
-20  C   6-E     p99-8-F-x   6-G-x!
-24  P   K-x     6-G-x
+74  1B  BB      6/F     7/F
+36  2B  DP      8/F     BB/r
+7   3B  1/F/#   9/3B    8/2B/r
+71  SS  6/E/r   1/G/#   8/2B/2
+20  C   6/E     p99/8/F 6/G/!
+24  P   K       6/G
 35  LF  BB      BB
-29  CF  K-x     1-1B
-21  RF  1-E     6-FC-x#
-77  FF  K-x#    1-G-x
+29  CF  K       1/1B
+21  RF  1/E     6/FC/x#
+77  FF  K/#     1/G
 ```
 
 Output Example
