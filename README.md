@@ -16,8 +16,26 @@ optional:
 Format of input file: 
 -----------
 (以下所有代號皆不分大小寫)
+text file input format:
+```
+type    聯賽名稱
+date    yyyy-mm-dd
+id      yyyymmdd1
+location    比賽場地
 
-* PA: **(換投-代打-)方位-記錄-註解**
+HOME    隊名
+Box     0   1   2   3   4   5
+姓名/背號  守位  PA  PA  PA
+姓名/背號  守位  PA  PA  PA
+...
+
+AWAY    隊名
+Box     0   1   2   3   4   5
+姓名/背號  守位  PA  PA  PA
+姓名/背號  守位  PA  PA  PA
+```
+
+* PA: **(換投/代打/)方位/記錄/註解**
   
 ```
     換投:
@@ -42,6 +60,8 @@ Format of input file:
         IB  違規擊球(Illegal Batted)
         CB  投手強襲球(combacker)
         IF  內野高飛必死球(Infield Fly)
+        FO  界外飛球接殺(Foul Out)
+        
     註解: 
         1~4 打點
         r   得分
@@ -53,41 +73,46 @@ Format of input file:
         
 * PA 的寫法可以為 
     - **記錄**
-    - **方位-記錄**
-    - **記錄-註解**
-    - **方位-記錄-註解**
+    - **方位/記錄**
+    - **記錄/註解**
+    - **方位/記錄/註解**
 
-* 若同一打席同時有換投和換代打，可寫 **換投-代打-PA** 或 **代打-換投-PA**
+* 若同一打席同時有換投和換代打，可寫 **換投/代打/PA** 或 **代打/換投/PA**
 
 
 Input Example
 ----------
 ```
-T1  化研
-p   6
-1   n   R-1B-r   8-2B-r   8-F-x       8-2B-r  8-2B-2r
-2   7   8-1B-r   9-3B-2r  6-1B-1      5-E-r   BB-r
-3   23  L-1B-1r  7-2B-1r  8-1B-1x*#   7-2B-2r HR-4r
-4   6   7-2B-2   7-HR-2r  6-G-x       7-2B-2  7-2B-r
-5   26  6-F-xx*  7-2B-r   r31-6-1B    K-x     rOB-8-1b-1r
-6   24  5-E-r    6-1B-r   7-2B        6-G-x#  8-E-r
-7   17  7-1B-1   8-HR-3r  K-x         8-1B-r  6-1B
-8   21  7-2B-x#* 7-1B-r   6-F-x#      6-1B-r  1-1B-1
-9   25  8-1B     6-E-r    8-1B-r      5-F-x   6-DP-xx!
-10  3   5-FC-xr  6-1B     rob-k-x     1-1b-r
+type        台大慢壘聯盟
+date        2014-01-01
+id          201401011
+location    萬壽橋
 
-T2  資工
-p   24
-1   74  BB      6-F-x   7-F-x
-2   36  DP-xx   8-F-x   BB-r
-3   7   1-F-x#  9-3B    8-2B-r
-4   71  6-E-r   1-G-x#  8-2B-2
-5   20  6-E     p99-8-F-x   6-G-x!
-6   24  K-x     6-G-x
-7   35  BB      BB
-8   29  K-x     1-1B
-9   21  1-E     6-FC-x#
-10  77  K-x#    1-G-x
+AWAY    化研
+Box     4   10  0   4   9
+n   1B  R/1B-r   8-2B-r   8-F-x       8-2B-r  8-2B-2r
+7   2B  8/1B-r   9-3B-2r  6-1B-1      5-E-r   BB-r
+23  3B  L-1B-1r  7-2B-1r  8-1B-1x*#   7-2B-2r HR-4r
+6   P   7-2B-2   7-HR-2r  6-G-x       7-2B-2  7-2B-r
+26  C   6-F-xx*  7-2B-r   r31-6-1B    K-x     rOB-8-1b-1r
+24  LF  5-E-r    6-1B-r   7-2B        6-G-x#  8-E-r
+17  RF  7-1B-1   8-HR-3r  K-x         8-1B-r  6-1B
+21  CF  7-2B-x#* 7-1B-r   6-F-x#      6-1B-r  1-1B-1
+25  SS  8-1B     6-E-r    8-1B-r      5-F-x   6-DP-xx!
+3   FF  5-FC-xr  6-1B     rob-k-x     1-1b-r
+
+HOME    資工
+Box     0   1   0   0   2
+74  1B  BB      6-F-x   7-F-x
+36  2B  DP-xx   8-F-x   BB-r
+7   3B  1-F-x#  9-3B    8-2B-r
+71  SS  6-E-r   1-G-x#  8-2B-2
+20  C   6-E     p99-8-F-x   6-G-x!
+24  P   K-x     6-G-x
+35  LF  BB      BB
+29  CF  K-x     1-1B
+21  RF  1-E     6-FC-x#
+77  FF  K-x#    1-G-x
 ```
 
 Output Example
