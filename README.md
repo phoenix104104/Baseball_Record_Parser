@@ -25,23 +25,23 @@ location    比賽場地
 
 AWAY    隊名
 Box     0   1   2   3   4   5
-姓名/背號  守位  PA  PA  PA
-姓名/背號  守位  PA  PA  PA
+姓名or背號  守位  PA  PA  PA
+姓名or背號  守位  PA  PA  PA
 ...
 
 HOME    隊名
 Box     0   1   2   3   4   5
-姓名/背號  守位  PA  PA  PA
-姓名/背號  守位  PA  PA  PA
+姓名or背號  守位  PA  PA  PA
+姓名or背號  守位  PA  PA  PA
 ```
 
 * PA: **(換投/代打/)方位/記錄/註解**
   
 ```
     換投:
-        p + 背號
+        p + 姓名or背號
     代打: 
-        r + 背號
+        r + 姓名or背號
     方位: 
         可以是守備代號(1~10)或L、R、C
     記錄: 

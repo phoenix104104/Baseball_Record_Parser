@@ -7,6 +7,7 @@ import sys, os, re, mimetypes
 
 app = Flask(__name__)
 
+
 def text_to_table(text):
     
     table = []
