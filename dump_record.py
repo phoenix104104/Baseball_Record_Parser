@@ -186,7 +186,7 @@ def make_team_PTTtable(team, isAddColor=True):
         else:
             num = player[n].number
 
-        space = " " * (6 - big5len(num) ) 
+        space = " " * (4 - big5len(num) ) 
         posts += "%s%s%3s  " %(num, space, player[n].pos)
 
         column = 0
