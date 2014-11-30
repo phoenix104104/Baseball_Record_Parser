@@ -7,8 +7,6 @@ import sys, os, re, mimetypes
 
 app = Flask(__name__)
 
-
-
 def text_to_table(text):
     
     table = []
@@ -54,8 +52,6 @@ def index():
         game, err = parse_game_record(away_team_name, away_scores, away_table, \
                                       home_team_name, home_scores, home_table)
         
-        exist_cjk(away_team_name) 
-        exist_cjk(home_team_name)
 
         game.game_type  = game_type
         game.date       = date
