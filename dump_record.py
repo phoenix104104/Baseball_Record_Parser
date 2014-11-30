@@ -2,8 +2,13 @@
 # -*- coding: utf8 -*-
 import sys, os
 
-def exist_cjk(string):
-    return any( 0x4e00 <= ord(x) <= 0x9fff for x in string)
+def num_cjk(string):
+    cnt = 0
+    for x in string.decode('utf-8'):
+        if 0x4e00 <= ord(x) <= 0x9fff:
+            cnt += 1
+
+    return cnt
 
 def make_PTT_format(game, isAddColor=True):
     
@@ -27,12 +32,15 @@ def make_PTT_format(game, isAddColor=True):
 
 
 def make_database_format(game):
-
+    
     posts = make_score_board(game)
     posts += "\n"
-    posts += dump_player_statistic(game.away)
-    posts += "\n"
-    posts += dump_player_statistic(game.home)
+    if( game.away.hasRecord() ):
+        posts += dump_player_statistic(game.away)
+        posts += "\n"
+    if( game.home.hasRecord() ):
+        posts += dump_player_statistic(game.home)
+        posts += "\n"
 
     return posts
 
@@ -54,11 +62,12 @@ def make_PTT_score_board(game):
     hh = "─"
     vv = "│"
     vh = "┼"
-    posts  = "      %s１%s２%s３%s４%s５%s６%s７%s　%sＲ%sＨ%sＥ\n" %(vv, vv, vv, vv, vv, vv, vv, vv, vv, vv, vv)
+    posts  = "        %s一%s二%s三%s四%s五%s六%s七%s　%sＲ%sＨ%sＥ%s\n" %(vv, vv, vv, vv, vv, vv, vv, vv, vv, vv, vv, vv)
     for team in [game.away, game.home]:
-        posts += "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n" %(hh, hh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh)
+        posts += "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n" %(hh, hh, hh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh, hh, vh)
         
-        posts += " %s %s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s　%s%2d%s%2d%s%2d\n" %(team.name, vv, team.scores[0], vv, team.scores[1], vv, team.scores[2], vv, team.scores[3], vv, team.scores[4], vv, team.scores[5], vv, team.scores[6], vv, vv, team.R, vv, team.H, vv, team.E)
+        space = 8 + num_cjk(team.name) 
+        posts += "%s%s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s%2d%s　%s%2d%s%2d%s%2d%s\n" %(team.name.center(space), vv, team.scores[0], vv, team.scores[1], vv, team.scores[2], vv, team.scores[3], vv, team.scores[4], vv, team.scores[5], vv, team.scores[6], vv, vv, team.R, vv, team.H, vv, team.E, vv)
     
     return posts
 

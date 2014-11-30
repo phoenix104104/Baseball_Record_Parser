@@ -8,6 +8,7 @@ import sys, os, re, mimetypes
 app = Flask(__name__)
 
 
+
 def text_to_table(text):
     
     table = []
@@ -53,6 +54,9 @@ def index():
         game, err = parse_game_record(away_team_name, away_scores, away_table, \
                                       home_team_name, home_scores, home_table)
         
+        exist_cjk(away_team_name) 
+        exist_cjk(home_team_name)
+
         game.game_type  = game_type
         game.date       = date
         game.location   = location
@@ -73,13 +77,19 @@ def index():
         
         if( not os.path.isdir('rd') ):
             os.mkdir('rd')
+        
+        output = ""
+        output += "%s %s (%s)\n\n" %(str(date), game_type, location)
+        output += game.post_ptt
+        output += "\n"
+        output += game.post_db
 
         with open(filepath, 'w') as f:
-            f.write(game.post_ptt)
+            f.write(output)
             print "Save %s" %filepath
         
         with open(filepath, 'r') as f: 
-            response = make_response(game.post_ptt)
+            response = make_response(output)
             response.headers['Content-Type'] = mimetypes.guess_type(filepath)[0]
             response.headers['Content-Disposition'] = 'attachment; filename=%s' %filename
             response.headers['Content-Length'] = os.path.getsize(filepath)

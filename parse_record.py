@@ -450,8 +450,9 @@ def parse_game_record(away_team_name, away_scores, away_table, home_team_name, h
     post_ptt = make_PTT_format(game, isColor)
     post_ptt = post_ptt.replace('\x1b', '\025')
     game.post_ptt = post_ptt
-    #post_db  = make_database_format(game)
 
+    game.post_db  = make_database_format(game)
+    
     return game, err
     
 
