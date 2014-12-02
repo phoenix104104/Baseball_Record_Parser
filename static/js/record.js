@@ -25,4 +25,7 @@ $(document).ready(function() {
         selectedClass: 'lineselect',
     });
     
+    document.getElementById("uploadBtn").onchange = function() {
+        document.getElementById("uploadFileName").value = this.value.replace("C:\\fakepath\\", "");
+    };
 });

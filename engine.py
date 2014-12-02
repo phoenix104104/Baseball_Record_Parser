@@ -6,6 +6,9 @@ from player import Game
 import sys, os, re, mimetypes
 
 app = Flask(__name__)
+upload_folder = 'upload'
+allowed_extensions = set(['txt', 'rd'])
+app.config['UPLOAD_FOLDER'] = upload_folder
 
 def text_to_table(text):
     
@@ -33,9 +36,19 @@ def gather_team_info(request, HA, record_str):
 
     return (team_name, scores, table)
 
+def is_allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1] in allowed_extensions
+
 @app.route('/', methods=["GET","POST"])
 def index():
-    
+    print request.files 
+    if( 'upload' in request.form ):
+        f = request.files['upload_file']
+        if f and is_allowed_file(f.filename):
+            filepath = os.path.join(app.config["UPLOAD_FOLDER"], f.filename)
+            f.save(filepath)
+            print "save %s\n" %filepath
+
     if( request.method == "POST" ):
 
         game_type   = request.form["game_type"].encode('utf8')
@@ -110,6 +123,7 @@ def index():
             response.headers['Content-Disposition'] = 'attachment; filename=%s' %filename
             response.headers['Content-Length'] = os.path.getsize(filepath)
             return response
+
 
     return render_template("index.html", game=Game(), id='', away_record='', home_record='', warning='')
 

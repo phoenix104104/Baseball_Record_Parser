@@ -98,11 +98,11 @@ table th, td{
     border-width: 3px;
 }
 
-.fileupload{
+.fileUpload{
     position: relative;
     overflow: hidden;
 }
-.fileupload input.upload{
+.fileUpload input.upload{
     position: absolute;
     top: 0;
     right: 0;
