@@ -214,11 +214,19 @@ Example:
 
             <div class="row">
                 <div class="row-center">
-                    <input type="submit" class="btn btn-primary" name="preview" value="預覽">
-    				<input type="submit" class="btn btn-success" name="download" value="下載">
+                    <div class="fileupload btn btn-info">
+    			        <span>上傳原始記錄檔</span><input type="file" class="upload" name="file">
+                    </div>
+                    <input type="submit" class="btn btn-primary" name="preview" value="預覽表格">
+    				<input type="submit" class="btn btn-success" name="download_ptt" value="下載PTT記錄檔">
+    				<input type="submit" class="btn btn-warning" name="download_rd" value="下載原始記錄檔">
                 </div>
             </div>
 
+            <br>
+
+            <div class="row row-center">
+            </div>
         </form>
         
         <br>

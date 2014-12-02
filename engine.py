@@ -59,32 +59,38 @@ def index():
         game.game_id    = game_id
         game.away.raw_record = away_record.encode('utf8')
         game.home.raw_record = home_record.encode('utf8')
+
+        if( err == "" ):
+            
+            filename = '%s-%s-%s' %(game.game_id, away_team_name, home_team_name)
+
+            # save record file
+            filepath = 'rd/%s.rd' %filename
+            game.save_game(filepath)
+            
+            # save output file (PTT format + statistic results)        
+            filepath = 'rd/%s.rd' %filename
+      
+            output = ""
+            output += "%s %s (%s)\n\n" %(str(date), game_type, location)
+            output += game.post_ptt
+            output += "\n"
+            output += game.post_db
+
+            with open(filepath, 'w') as f:
+                f.write(output)
+                print "Save %s" %filepath
+
          
     if( 'preview' in request.form and err == "" ) :
         return render_template("index.html", game=game, id=id, away_record=away_record, home_record=home_record, warning=err, preview=True)
     
-    if( 'download' in request.form and err == "" ):
-        
-        filepath = 'rd/%s.rd' %game.game_id
-        game.save_game(filepath)
-         
-        filename = '%s.txt' %game.game_id
-        filepath = 'rd/%s' %filename
-        
-        if( not os.path.isdir('rd') ):
-            os.mkdir('rd')
-        
-        output = ""
-        output += "%s %s (%s)\n\n" %(str(date), game_type, location)
-        output += game.post_ptt
-        output += "\n"
-        output += game.post_db
 
-        with open(filepath, 'w') as f:
-            f.write(output)
-            print "Save %s" %filepath
-        
-        with open(filepath, 'r') as f: 
+    if( 'download_ptt' in request.form and err == "" ):
+
+        filepath = 'rd/%s.txt' %filename
+        with open(filepath, 'r') as f:
+            output = f.read()
             response = make_response(output)
             response.headers['Content-Type'] = mimetypes.guess_type(filepath)[0]
             response.headers['Content-Disposition'] = 'attachment; filename=%s' %filename
@@ -94,6 +100,18 @@ def index():
     return render_template("index.html", game=Game(), id='', away_record='', home_record='', warning='')
 
 
+    if( 'download_rd' in request.form and err == "" ):
+
+        filepath = 'rd/%s.rd' %filename
+        with open(filepath, 'r') as f: 
+            output = f.read()
+            response = make_response(output)
+            response.headers['Content-Type'] = mimetypes.guess_type(filepath)[0]
+            response.headers['Content-Disposition'] = 'attachment; filename=%s' %filename
+            response.headers['Content-Length'] = os.path.getsize(filepath)
+            return response
+
+    return render_template("index.html", game=Game(), id='', away_record='', home_record='', warning='')
 
 
 if __name__ == "__main__":

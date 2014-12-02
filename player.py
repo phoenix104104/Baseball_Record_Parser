@@ -29,7 +29,7 @@ class Game:
             output += "type\t%s\n" %self.game_type
             output += "date\t%s\n" %str(self.date)
             output += "gameid\t%s\n" %self.game_id
-            output += "location\t%s\n" %self.location
+            output += "location\t%s\n\n" %self.location
             
             output += "Away\t%s\n"  %self.away.name
             output += "Box"
