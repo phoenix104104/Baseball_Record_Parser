@@ -26,6 +26,8 @@ $(document).ready(function() {
     });
     
     document.getElementById("uploadBtn").onchange = function() {
-        document.getElementById("uploadFileName").value = this.value.replace("C:\\fakepath\\", "");
+//        document.getElementById("uploadFileName").value = this.value.replace("C:\\fakepath\\", "");
+       document.getElementById('record_form').submit();
     };
+
 });

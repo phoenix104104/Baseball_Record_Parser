@@ -50,14 +50,14 @@
 <!--  content  -->
     <div class="container">
         
-        <form action='/' enctype='multipart/form-data' method="POST">
+        <form action='/' id='record_form' enctype='multipart/form-data' method="POST">
             <div class="row">
                 <div class="row-center">
-                    <div class="fileUpload btn">
-                        <input id="uploadFileName" size="10" placeholder="Choose File" disabled="disabled">
-                        <input id="uploadBtn" type="file" class='upload' name="upload_file">
+                    <div class="fileUpload btn btn-info">
+                        <!--<input type="submit" class="btn btn-info" id="file_submit" name = "upload" value = "上傳原始記錄檔">-->
+                        <span>upload</span>
+                        <input id="uploadBtn" type="file" class='upload' name="upload_file" onchange='upload()'>
                     </div>
-                    <input type="submit" class="btn btn-info" name = "upload" value = "上傳原始記錄檔">
                 </div>
             </div>
         

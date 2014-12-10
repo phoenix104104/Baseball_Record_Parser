@@ -42,12 +42,17 @@ def is_allowed_file(filename):
 @app.route('/', methods=["GET","POST"])
 def index():
     print request.files 
-    if( 'upload' in request.form ):
+    warning = ''
+    if( 'upload_file' in request.files ):
         f = request.files['upload_file']
         if f and is_allowed_file(f.filename):
             filepath = os.path.join(app.config["UPLOAD_FOLDER"], f.filename)
             f.save(filepath)
             print "save %s\n" %filepath
+            warning = 'upload %s' %f.filename
+        else:
+            warning = 'Not allowed file extension: %s' %os.path.splitext(f.filename)[-1]
+           
 
     if( request.method == "POST" ):
 
@@ -110,7 +115,7 @@ def index():
             response.headers['Content-Length'] = os.path.getsize(filepath)
             return response
 
-    return render_template("index.html", game=Game(), id='', away_record='', home_record='', warning='')
+    return render_template("index.html", game=Game(), id='', away_record='', home_record='', warning=warning)
 
 
     if( 'download_rd' in request.form and err == "" ):
