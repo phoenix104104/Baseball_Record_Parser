@@ -41,12 +41,12 @@ def is_allowed_file(filename):
 
 @app.route('/', methods=["GET","POST"])
 def index():
-    print "request.files:"
-    print request.files 
-
-    print "request.form:"
-    print request.form
     warning = ''
+    
+    if( "reset" in request.form ):
+        return render_template("index.html", game=Game(), id='', away_record='', home_record='', warning='')
+
+
     if( 'upload_file' in request.files ):
         f = request.files['upload_file']
         if f and is_allowed_file(f.filename):
