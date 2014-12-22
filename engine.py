@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, make_response, send_from_directory
-from parse_record import parse_game_record
+from parse_record import parse_game_record, load_record_file
 from player import Game
 import sys, os, re, mimetypes
 
@@ -9,6 +9,15 @@ app = Flask(__name__)
 upload_folder = 'upload'
 allowed_extensions = set(['txt', 'rd'])
 app.config['UPLOAD_FOLDER'] = upload_folder
+
+def table_to_text(table):
+    lines = ""
+    for row in table:
+        for col in row:
+            lines += "%s\t" %col
+        lines += "\n"
+    
+    return lines
 
 def text_to_table(text):
     
@@ -41,40 +50,71 @@ def is_allowed_file(filename):
 
 @app.route('/', methods=["GET","POST"])
 def index():
-    warning = ''
-    
+
+    game_type   = ""
+    date        = None
+    game_id     = ""
+    location    = ""
+    away_team_name  = ""
+    away_scores     = []
+    away_table      = []
+    away_record     = ""
+    home_team_name  = ""
+    home_scores     = []
+    home_table      = []
+    home_record     = ""
+
+    warning = ""
+    load_file  = False
+    parse_game = False
+        
     if( "reset" in request.form ):
         return render_template("index.html", game=Game(), id='', away_record='', home_record='', warning='')
 
-
-    if( 'upload_file' in request.files ):
-        f = request.files['upload_file']
-        if f and is_allowed_file(f.filename):
-            filepath = os.path.join(app.config["UPLOAD_FOLDER"], f.filename)
-            f.save(filepath)
-            print "save %s\n" %filepath
-            warning = 'upload %s' %f.filename
-        else:
-            warning = 'Not allowed file extension: %s' %os.path.splitext(f.filename)[-1]
-           
-
     if( request.method == "POST" ):
-
-        game_type   = request.form["game_type"].encode('utf8')
-        date        = request.form["date"]
-        location    = request.form["location"].encode('utf8')
-        id          = request.form["game_id"].encode('utf8')
-        game_id     = str(date).replace("-", "") + str(id)
-        away_record = request.form["away_record"]
-        home_record = request.form["home_record"]
     
-        (away_team_name, away_scores, away_table) = gather_team_info(request, "away", away_record.encode('utf8'))
-        (home_team_name, home_scores, home_table) = gather_team_info(request, "home", home_record.encode('utf8'))
+        # parse from upload file
+        if( 'upload_file' in request.files ):
+            f = request.files['upload_file']
+            
+            if( f ):
+                load_file = True
+                if is_allowed_file(f.filename):
+                    filepath = os.path.join(app.config["UPLOAD_FOLDER"], f.filename)
+                    f.save(filepath)
+                    print "save %s\n" %filepath
+                    warning = 'upload %s' %f.filename
         
+                
+                    game_type, date, game_id, location, \
+                    away_team_name, away_scores, away_table, \
+                    home_team_name, home_scores, home_table = load_record_file(filepath)
+                    
+                    away_record = table_to_text(away_table)
+                    home_record = table_to_text(home_table)
+                    parse_game = True
+                else:
+                    warning = 'Not allowed file extension: %s' %os.path.splitext(f.filename)[-1]
+             
+        # parse from web
+        if( not load_file ):
+            game_type   = request.form["game_type"].encode('utf8')
+            date        = request.form["date"]
+            location    = request.form["location"].encode('utf8')
+            game_id     = request.form["game_id"].encode('utf8')
+            away_record = request.form["away_record"]
+            home_record = request.form["home_record"]
+        
+            (away_team_name, away_scores, away_table) = gather_team_info(request, "away", away_record.encode('utf8'))
+            (home_team_name, home_scores, home_table) = gather_team_info(request, "home", home_record.encode('utf8'))
+    
+            parse_game = True
+    
+    if( parse_game ):
+        print "parse_game" 
         game, err = parse_game_record(away_team_name, away_scores, away_table, \
                                       home_team_name, home_scores, home_table)
         
-
         game.game_type  = game_type
         game.date       = date
         game.location   = location
@@ -103,9 +143,11 @@ def index():
                 f.write(output)
                 print "Save %s" %filepath
 
-         
-    if( 'preview' in request.form and err == "" ) :
-        return render_template("index.html", game=game, id=id, away_record=away_record, home_record=home_record, warning=err, preview=True)
+            return render_template("index.html", game=game, id=game_id, away_record=away_record, home_record=home_record, warning=err, preview=True)
+
+        else:
+            return render_template("index.html", game=game, id=game_id, away_record=away_record, home_record=home_record, warning=err)
+
     
 
     if( 'download_ptt' in request.form and err == "" ):
@@ -132,7 +174,7 @@ def index():
             return response
 
 
-    return render_template("index.html", game=Game(), id='', away_record='', home_record='', warning='')
+    return render_template("index.html", game=Game(), id='', away_record='', home_record='', warning=warning)
 
 
 if __name__ == "__main__":

@@ -289,7 +289,9 @@ def parse_order_table(team):
             turn += 1
     
     team.H  = team_H
-    parse_column(team)
+    if( err == "" ):
+        parse_column(team)
+    
     return opp_E, err
 
 
@@ -392,17 +394,30 @@ def make_game(game):
 
 
 def load_record_file(recordFileName):
-
+    
+    game_type   = ""
+    date        = ""
+    game_id     = ""
+    location    = ""
     away_scores = []
     away_table  = []
     home_scores = []
     home_table  = []
+
     with open(recordFileName) as f:
         print "Load " + recordFileName
         for line in f:
             data = list(line.split())
             if len(data) != 0:
-                if( data[0].upper() == 'AWAY' ):
+                if( data[0].upper() == 'TYPE' ):
+                    game_type = data[1]
+                elif( data[0].upper() == 'DATE' ):
+                    date = data[1]
+                elif( data[0].upper() == 'GAMEID' ):
+                    game_id = data[1]
+                elif( data[0].upper() == 'LOCATION' ):
+                    location = data[1]
+                elif( data[0].upper() == 'AWAY' ):
                     away_team_name = data[1]
                     scores = away_scores
                     table  = away_table
@@ -416,7 +431,7 @@ def load_record_file(recordFileName):
                 else:
                     table.append(data)
 
-    return away_team_name, away_scores, away_table, home_team_name, home_scores, home_table
+    return game_type, date, game_id, location, away_team_name, away_scores, away_table, home_team_name, home_scores, home_table
 
 ## main calling function
 def parse_game_record(away_team_name, away_scores, away_table, home_team_name, home_scores, home_table):
@@ -469,6 +484,7 @@ if __name__ == "__main__":
     outputFileName = opts.output_file_name
     isColor = not opts.no_color
 
+    game_type, date, game_id, location, \
     away_team_name, away_scores, away_record, \
     home_team_name, home_scores, home_record = load_record_file(recordFileName)
 
