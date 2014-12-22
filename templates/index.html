@@ -11,6 +11,7 @@
 
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-navbar-custom.css" rel="stylesheet">
     <link href="/static/css/record.css" rel="stylesheet">
     <link href="/static/css/jquery-linedtextarea.css" rel="stylesheet">
 
@@ -33,7 +34,7 @@
 <body>
     
 <!--  header  -->    
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="navbar navbar-custom" role="navigation">
         <div class="container">
             <div class="navbar-header">
                 <div class="navbar-brand">Softball Record Parser</div>
@@ -54,8 +55,7 @@
             <div class="row">
                 <div class="row-center">
                     <div class="fileUpload btn btn-info">
-                        <!--<input type="submit" class="btn btn-info" id="file_submit" name = "upload" value = "上傳原始記錄檔">-->
-                        <span>upload</span>
+                        <span>上傳文字記錄檔</span>
                         <input id="uploadBtn" type="file" class='upload' name="upload_file" onchange='upload()'>
                     </div>
                 </div>
@@ -230,7 +230,7 @@ Example:
                 <div class="row-center">
                     <input type="submit" class="btn btn-primary" name="preview" value="預覽表格">
     				<input type="submit" class="btn btn-success" name="download_ptt" value="下載PTT記錄檔">
-    				<input type="submit" class="btn btn-warning" name="download_rd" value="下載原始記錄檔">
+    				<input type="submit" class="btn btn-warning" name="download_rd" value="下載文字記錄檔">
                 </div>
             </div>
 

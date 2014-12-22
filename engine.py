@@ -41,7 +41,11 @@ def is_allowed_file(filename):
 
 @app.route('/', methods=["GET","POST"])
 def index():
+    print "request.files:"
     print request.files 
+
+    print "request.form:"
+    print request.form
     warning = ''
     if( 'upload_file' in request.files ):
         f = request.files['upload_file']
@@ -87,7 +91,7 @@ def index():
             game.save_game(filepath)
             
             # save output file (PTT format + statistic results)        
-            filepath = 'rd/%s.rd' %filename
+            filepath = 'rd/%s.txt' %filename
       
             output = ""
             output += "%s %s (%s)\n\n" %(str(date), game_type, location)
@@ -105,27 +109,25 @@ def index():
     
 
     if( 'download_ptt' in request.form and err == "" ):
-
+        print "download ptt"
         filepath = 'rd/%s.txt' %filename
         with open(filepath, 'r') as f:
             output = f.read()
             response = make_response(output)
             response.headers['Content-Type'] = mimetypes.guess_type(filepath)[0]
-            response.headers['Content-Disposition'] = 'attachment; filename=%s' %filename
+            response.headers['Content-Disposition'] = 'attachment; filename=%s.txt' %filename
             response.headers['Content-Length'] = os.path.getsize(filepath)
             return response
 
-    return render_template("index.html", game=Game(), id='', away_record='', home_record='', warning=warning)
-
 
     if( 'download_rd' in request.form and err == "" ):
-
+        print "download_rd"
         filepath = 'rd/%s.rd' %filename
         with open(filepath, 'r') as f: 
             output = f.read()
             response = make_response(output)
             response.headers['Content-Type'] = mimetypes.guess_type(filepath)[0]
-            response.headers['Content-Disposition'] = 'attachment; filename=%s' %filename
+            response.headers['Content-Disposition'] = 'attachment; filename=%s.rd' %filename
             response.headers['Content-Length'] = os.path.getsize(filepath)
             return response
 
